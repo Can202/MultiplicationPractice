@@ -32,6 +32,7 @@ class Game:
 
         self.mainGame = GameLogic(False)
         self.mainMenu = Menu()
+        self.settingsMenu = ConfigurationMenu(False)
 
         self.sound_channel = pygame.mixer.Channel(2)
         self.musicallowed = True
@@ -77,6 +78,11 @@ class Game:
                                     self.deltaTime,
                                     self.mouseposX, self.mouseposY,
                                     self.mousepressed)
+            if self.settingsMenu.running:
+                self.settingsMenu.mainloop(self.fix, self.offset,
+                                    self.deltaTime,
+                                    self.mouseposX, self.mouseposY,
+                                    self.mousepressed)
             
             if self.mainMenu.playbtn.get_pressed:
                 self.mainMenu.playbtn.get_pressed = False
@@ -94,7 +100,16 @@ class Game:
                     self.running = False
                 self.mainMenu.quitbtn.get_pressed = False
 
-            
+            elif self.mainMenu.settingsbtn.get_pressed:
+                self.mainMenu.running = False
+                self.mainMenu.settingsbtn.get_pressed = False
+                self.settingsMenu.running = True
+            elif self.settingsMenu.quitbtn.get_pressed:
+                self.mainMenu.running = True
+                self.settingsMenu.quitbtn.get_pressed = False
+                self.settingsMenu.running = False
+
+            '''
             if self.mainMenu.hardbtn.get_pressed:
                 self.mainMenu.hardbtn.get_pressed = False
                 if self.mainMenu.hardbtntime.timing == False:
@@ -115,7 +130,7 @@ class Game:
                     else:
                         self.musicallowed = True
                         self.mainMenu.musicmode.image = media.resize(media.TICKET,40,40)
-
+            '''
 
             self.screenfix()
             self.deltaTime = self.clock.tick(60) / 1000.0
@@ -129,6 +144,10 @@ class Game:
             if self.mainMenu.running:
                 self.window.blit(pygame.transform.scale(
                     self.mainMenu.screen, (int(constant.WIDTH*self.fix), int(constant.HEIGHT*self.fix))), 
+                    self.offset)
+            if self.settingsMenu.running:
+                self.window.blit(pygame.transform.scale(
+                    self.settingsMenu.screen, (int(constant.WIDTH*self.fix), int(constant.HEIGHT*self.fix))), 
                     self.offset)
 
             pygame.display.update()
@@ -343,7 +362,6 @@ class GameLogic:
 
         self.quitbtn.draw(self.screen)
 
-        
 class Menu:
     def __init__(self, _running = True) -> None:
         
@@ -357,8 +375,59 @@ class Menu:
         self.background = objects.Node(pygame.Vector2(0,0), media.BACKGROUND)
         self.playbtn = objects.Button(
             pygame.Vector2((constant.WIDTH-310)/2, (constant.HEIGHT+300)/2),
-            _text="   touch to play")
+            _text="  touch to play")
         
+        self.quitbtn = objects.Button(pygame.Vector2(55,70),
+                                    media.resize(media.ERROR,40,40), "",
+                                    media.resize(media.ERROR,40,40),media.resize(media.ERROR,40,40))
+        self.quitTime = objects.Timer(.3)
+
+
+
+        self.settingsbtn = objects.Button(pygame.Vector2(1170,50),
+                                    media.resize(media.IMG_SETTINGS,60,60), "",
+                                    media.resize(media.IMG_SETTINGS,60,60),media.resize(media.IMG_SETTINGS,60,60))
+        self.settingsbtnTime = objects.Timer(.3)
+
+    def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
+
+        self.fix = _fix
+        self.offset = _offset
+        self.deltaTime = _dt
+        self.mouseposX = _mpx
+        self.mouseposY = _mpy
+
+        self.mousepressed = _mp 
+
+        self.update()
+        self.draw()
+    
+    def update(self):
+        self.quitTime.update(self.deltaTime)
+        self.settingsbtnTime.update(self.deltaTime)
+
+        self.playbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.quitbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.settingsbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+
+
+    def draw(self):
+        self.background.draw(self.screen)
+        self.menuphoto.draw(self.screen)
+        self.playbtn.draw(self.screen)
+        self.quitbtn.draw(self.screen)
+        self.settingsbtn.draw(self.screen)
+
+
+class ConfigurationMenu:
+    def __init__(self, _running = True) -> None:
+        
+        self.running = _running
+        
+        self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
+
+        self.background = objects.Node(pygame.Vector2(0,0), media.BACKGROUND)
+
         self.quitbtn = objects.Button(pygame.Vector2(55,70),
                                     media.resize(media.ERROR,40,40), "",
                                     media.resize(media.ERROR,40,40),media.resize(media.ERROR,40,40))
@@ -390,7 +459,6 @@ class Menu:
     
     def update(self):
         self.quitTime.update(self.deltaTime)
-        self.playbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.quitbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.hardbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.musicbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
@@ -399,8 +467,6 @@ class Menu:
 
     def draw(self):
         self.background.draw(self.screen)
-        self.menuphoto.draw(self.screen)
-        self.playbtn.draw(self.screen)
         self.quitbtn.draw(self.screen)
         self.musicbtn.draw(self.screen)
         self.hardbtn.draw(self.screen)
