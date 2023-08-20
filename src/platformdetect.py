@@ -13,6 +13,7 @@ def platform():
 
 def getPath():
     if platform()=="android":
-        return "/data/data/com.can202.readtime/files/app/"
+        return "/data/data/com.can202.multiplicationpractice/files/app/"
     else:
         return ""
+    
