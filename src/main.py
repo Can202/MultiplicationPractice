@@ -37,6 +37,8 @@ class Game:
         self.sound_channel = pygame.mixer.Channel(2)
         self.musicallowed = True
         self.hardmode = False
+        self.numberl, self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
+
 
 
 
@@ -105,32 +107,14 @@ class Game:
                 self.mainMenu.settingsbtn.get_pressed = False
                 self.settingsMenu.running = True
             elif self.settingsMenu.quitbtn.get_pressed:
+                self.numberl, self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
+                
+                
+
                 self.mainMenu.running = True
                 self.settingsMenu.quitbtn.get_pressed = False
                 self.settingsMenu.running = False
 
-            '''
-            if self.mainMenu.hardbtn.get_pressed:
-                self.mainMenu.hardbtn.get_pressed = False
-                if self.mainMenu.hardbtntime.timing == False:
-                    self.mainMenu.hardbtntime.timing = True
-                    if self.hardmode:
-                        self.hardmode = False
-                        self.mainMenu.hardmode.image = media.resize(media.ERROR,40,40)
-                    else:
-                        self.hardmode = True
-                        self.mainMenu.hardmode.image = media.resize(media.TICKET,40,40)
-            if self.mainMenu.musicbtn.get_pressed:
-                self.mainMenu.musicbtn.get_pressed = False
-                if self.mainMenu.musicbtntime.timing == False:
-                    self.mainMenu.musicbtntime.timing = True
-                    if self.musicallowed:
-                        self.musicallowed = False
-                        self.mainMenu.musicmode.image = media.resize(media.ERROR,40,40)
-                    else:
-                        self.musicallowed = True
-                        self.mainMenu.musicmode.image = media.resize(media.TICKET,40,40)
-            '''
 
             self.screenfix()
             self.deltaTime = self.clock.tick(60) / 1000.0
@@ -486,20 +470,20 @@ class ConfigurationMenu:
         self.btn12status = objects.Node(pygame.Vector2(380,440),media.resize(media.ERROR,40,40))
 
 
-        self.status1 = False
-        self.status2 = False
-        self.status3 = False
-        self.status4 = False
-        self.status5 = False
-        self.status6 = False
-        self.status7 = False
-        self.status8 = False
-        self.status9 = False
-        self.status10 = False
+        self.status1 = True
+        self.status2 = True
+        self.status3 = True
+        self.status4 = True
+        self.status5 = True
+        self.status6 = True
+        self.status7 = True
+        self.status8 = True
+        self.status9 = True
+        self.status10 = True
         self.status11 = False
         self.status12 = False
-        self.statushard = False
-        self.statusmusic = False
+        self.statushard = True
+        self.statusmusic = True
 
         self.statusmode = "multipleanswer"
         self.statusbase = 10
@@ -634,7 +618,10 @@ class ConfigurationMenu:
             else:
                 self.statusmode = "multipleanswer"
 
-
+    def returnvalues(self):
+        return (
+            [self.status1,self.status2,self.status3,self.status4,self.status5,self.status6,self.status7,self.status8,self.status9,self.status10,self.status11,self.status12],
+            self.statusmusic, self.statushard, self.statusbase, self.statusmode)
 
 
     def draw(self):
