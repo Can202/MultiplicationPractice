@@ -3,6 +3,7 @@ import constant
 import media
 import objects
 import random
+import os
 import sound
 import platformdetect
 
@@ -112,15 +113,17 @@ class Game:
                 self.mainMenu.settingsbtn.get_pressed = False
                 self.settingsMenu.running = True
             elif self.settingsMenu.quitbtn.get_pressed:
+                self.settingsMenu.quitbtn.get_pressed = False
                 self.mainGame.numberlist = None
                 self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
-                self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
-                
-                
+                if self.mainGame.numberlist:
 
-                self.mainMenu.running = True
-                self.settingsMenu.quitbtn.get_pressed = False
-                self.settingsMenu.running = False
+                    self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
+                    
+                    self.settingsMenu.writeData()
+
+                    self.mainMenu.running = True
+                    self.settingsMenu.running = False
 
 
             self.screenfix()
@@ -497,11 +500,52 @@ class ConfigurationMenu:
         self.statusmode = "multipleanswer"
         self.statusbase = 10
 
-        self.read_save_files()
+        self.readData()
 
 
         self.musicbtntime = objects.Timer(.3)
         self.hardbtntime = objects.Timer(.3)
+
+    def readData(self):
+        if os.path.exists(f"{platformdetect.getPath()}save/conf.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getPath()}save/conf.dat")
+            self.status1 = platformdetect.getjsondataifexists(self.status1, jsonfile, "status1")
+            self.status2 = platformdetect.getjsondataifexists(self.status2, jsonfile, "status2")
+            self.status3 = platformdetect.getjsondataifexists(self.status3, jsonfile, "status3")
+            self.status4 = platformdetect.getjsondataifexists(self.status4, jsonfile, "status4")
+            self.status5 = platformdetect.getjsondataifexists(self.status5, jsonfile, "status5")
+            self.status6 = platformdetect.getjsondataifexists(self.status6, jsonfile, "status6")
+            self.status7 = platformdetect.getjsondataifexists(self.status7, jsonfile, "status7")
+            self.status8 = platformdetect.getjsondataifexists(self.status8, jsonfile, "status8")
+            self.status9 = platformdetect.getjsondataifexists(self.status9, jsonfile, "status9")
+            self.status10 = platformdetect.getjsondataifexists(self.status10, jsonfile, "status10")
+            self.status11 = platformdetect.getjsondataifexists(self.status11, jsonfile, "status11")
+            self.status12 = platformdetect.getjsondataifexists(self.status12, jsonfile, "status12")
+
+            self.statusmusic = platformdetect.getjsondataifexists(self.statusmusic, jsonfile, "statusmusic")
+            self.statushard = platformdetect.getjsondataifexists(self.statushard, jsonfile, "statushard")
+            self.statusbase = platformdetect.getjsondataifexists(self.statusbase, jsonfile, "statusbase")
+            self.statusmode = platformdetect.getjsondataifexists(self.statusmode, jsonfile, "statusmode")
+    def writeData(self):
+        data = {}
+        data["status1"] = self.status1
+        data["status2"] = self.status2
+        data["status3"] = self.status3
+        data["status4"] = self.status4
+        data["status5"] = self.status5
+        data["status6"] = self.status6
+        data["status7"] = self.status7
+        data["status8"] = self.status8
+        data["status9"] = self.status9
+        data["status10"] = self.status10
+        data["status11"] = self.status11
+        data["status12"] = self.status12
+
+        data["statusmusic"] = self.statusmusic
+        data["statushard"] = self.statushard
+        data["statusbase"] = self.statusbase
+        data["statusmode"] = self.statusmode
+        platformdetect.writeFile(f"{platformdetect.getPath()}save/conf.dat", data)
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
 
         self.fix = _fix
@@ -543,9 +587,7 @@ class ConfigurationMenu:
         self.buttons_changing_status()
 
         self.changeimageofbtns()
-    
-    def read_save_files(self):
-        pass
+
 
     def changeimageofbtns(self):
         if self.statusbase == 10:
