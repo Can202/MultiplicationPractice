@@ -37,7 +37,11 @@ class Game:
         self.sound_channel = pygame.mixer.Channel(2)
         self.musicallowed = True
         self.hardmode = False
-        self.numberl, self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
+
+
+        self.mainGame.numberlist = None
+        self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
+        self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
 
 
 
@@ -90,6 +94,7 @@ class Game:
                 self.mainMenu.playbtn.get_pressed = False
                 self.mainMenu.running = False
                 self.mainGame.running = True
+                self.mainGame.shuffle = True
                 self.mainGame.goods = 0
             elif self.mainGame.quitbtn.get_pressed:
                 self.mainGame.quitbtn.get_pressed = False
@@ -107,7 +112,9 @@ class Game:
                 self.mainMenu.settingsbtn.get_pressed = False
                 self.settingsMenu.running = True
             elif self.settingsMenu.quitbtn.get_pressed:
-                self.numberl, self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
+                self.mainGame.numberlist = None
+                self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
+                self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
                 
                 
 
@@ -429,8 +436,10 @@ class ConfigurationMenu:
         self.hardbtnstatus = objects.Node(pygame.Vector2(1190,200),media.resize(media.ERROR,40,40))
 
         self.btnbase = objects.Button(pygame.Vector2(1170,290), media.BTN10, "", media.BTN12, media.BTN12)        
+        
+        # Temporaly disabled
         self.btnanswermode = objects.Button(pygame.Vector2(1170,400), media.BTNANS1, "", media.BTNANS1, media.BTNANS1)
-
+        self.btnanswermode.drawing = False
 
 
         self.btn1 = objects.Button(pygame.Vector2(30,180), media.BTN1, "", media.BTN1, media.BTN1)
@@ -619,10 +628,35 @@ class ConfigurationMenu:
                 self.statusmode = "multipleanswer"
 
     def returnvalues(self):
-        return (
-            [self.status1,self.status2,self.status3,self.status4,self.status5,self.status6,self.status7,self.status8,self.status9,self.status10,self.status11,self.status12],
-            self.statusmusic, self.statushard, self.statusbase, self.statusmode)
+        return (self.statusmusic, self.statushard, self.statusbase, self.statusmode)
 
+    def returnlistfromnumbers(self):
+        list = []
+        if self.status1:
+            list.append(1)
+        if self.status2:
+            list.append(2)
+        if self.status3:
+            list.append(3)
+        if self.status4:
+            list.append(4)
+        if self.status5:
+            list.append(5)
+        if self.status6:
+            list.append(6)
+        if self.status7:
+            list.append(7)
+        if self.status8:
+            list.append(8)
+        if self.status9:
+            list.append(9)
+        if self.status10:
+            list.append(10)
+        if self.status11:
+            list.append(11)
+        if self.status12:
+            list.append(12)
+        return list
 
     def draw(self):
         self.background.draw(self.screen)
