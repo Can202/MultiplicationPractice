@@ -363,7 +363,7 @@ class Menu:
         
         self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
 
-        self.menuphoto = objects.Node(pygame.Vector2(300,20),
+        self.menuphoto = objects.Node(pygame.Vector2(0,0),
                                       media.MENU)
 
         self.background = objects.Node(pygame.Vector2(0,0), media.BACKGROUND)
