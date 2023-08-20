@@ -11,11 +11,13 @@ class Node:
         self.image = _image
         self.velocity = pygame.Vector2(0,0)
         self.acceleration = pygame.Vector2(0,0)
+        self.drawing = True
     def update(self, deltaTime):
         self.velocity += self.acceleration * deltaTime
         self.position += self.velocity * deltaTime
     def draw(self, screen):
-        screen.blit(self.image, self.position)  
+        if self.drawing:
+            screen.blit(self.image, self.position)  
 
 class Button(Node):
     def __init__(self,

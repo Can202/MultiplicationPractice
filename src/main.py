@@ -437,11 +437,76 @@ class ConfigurationMenu:
         self.musicbtn = objects.Button(pygame.Vector2(1170,70),
                                     media.resize(media.MUSICMODE,80,80), "",
                                     media.resize(media.MUSICMODE,80,80),media.resize(media.MUSICMODE,80,80))
+        self.musicbtnstatus = objects.Node(pygame.Vector2(1190,90),media.resize(media.ERROR,40,40))
+
         self.hardbtn = objects.Button(pygame.Vector2(1170,180),
                                     media.resize(media.HARDMODE,80,80), "",
                                     media.resize(media.HARDMODE,80,80),media.resize(media.HARDMODE,80,80))
-        self.musicmode = objects.Node(pygame.Vector2(1120,90),media.resize(media.TICKET,40,40))
-        self.hardmode = objects.Node(pygame.Vector2(1120,200),media.resize(media.ERROR,40,40))
+        self.hardbtnstatus = objects.Node(pygame.Vector2(1190,200),media.resize(media.ERROR,40,40))
+
+        self.btnbase = objects.Button(pygame.Vector2(1170,290), media.BTN10, "", media.BTN12, media.BTN12)        
+        self.btnanswermode = objects.Button(pygame.Vector2(1170,400), media.BTNANS1, "", media.BTNANS1, media.BTNANS1)
+
+
+
+        self.btn1 = objects.Button(pygame.Vector2(30,180), media.BTN1, "", media.BTN1, media.BTN1)
+        self.btn1status = objects.Node(pygame.Vector2(50,200),media.resize(media.ERROR,40,40))
+
+        self.btn2 = objects.Button(pygame.Vector2(30,300), media.BTN2, "", media.BTN2, media.BTN2)
+        self.btn2status = objects.Node(pygame.Vector2(50,320),media.resize(media.ERROR,40,40))
+
+        self.btn3 = objects.Button(pygame.Vector2(30,420), media.BTN3, "", media.BTN3, media.BTN3)
+        self.btn3status = objects.Node(pygame.Vector2(50,440),media.resize(media.ERROR,40,40))
+
+        self.btn4 = objects.Button(pygame.Vector2(140,180), media.BTN4, "", media.BTN4, media.BTN4)
+        self.btn4status = objects.Node(pygame.Vector2(160,200),media.resize(media.ERROR,40,40))
+
+        self.btn5 = objects.Button(pygame.Vector2(140,300), media.BTN5, "", media.BTN5, media.BTN5)
+        self.btn5status = objects.Node(pygame.Vector2(160,320),media.resize(media.ERROR,40,40))
+
+        self.btn6 = objects.Button(pygame.Vector2(140,420), media.BTN6, "", media.BTN6, media.BTN6)
+        self.btn6status = objects.Node(pygame.Vector2(160,440),media.resize(media.ERROR,40,40))
+
+        self.btn7 = objects.Button(pygame.Vector2(250,180), media.BTN7, "", media.BTN7, media.BTN7)
+        self.btn7status = objects.Node(pygame.Vector2(270,200),media.resize(media.ERROR,40,40))
+
+        self.btn8 = objects.Button(pygame.Vector2(250,300), media.BTN8, "", media.BTN8, media.BTN8)
+        self.btn8status = objects.Node(pygame.Vector2(270,320),media.resize(media.ERROR,40,40))
+
+        self.btn9 = objects.Button(pygame.Vector2(250,420), media.BTN9, "", media.BTN9, media.BTN9)
+        self.btn9status = objects.Node(pygame.Vector2(270,440),media.resize(media.ERROR,40,40))
+
+        self.btn10 = objects.Button(pygame.Vector2(360,180), media.BTN10, "", media.BTN10, media.BTN10)
+        self.btn10status = objects.Node(pygame.Vector2(380,200),media.resize(media.ERROR,40,40))
+
+        self.btn11 = objects.Button(pygame.Vector2(360,300), media.BTN11, "", media.BTN11, media.BTN11)
+        self.btn11status = objects.Node(pygame.Vector2(380,320),media.resize(media.ERROR,40,40))
+
+        self.btn12 = objects.Button(pygame.Vector2(360,420), media.BTN12, "", media.BTN12, media.BTN12)
+        self.btn12status = objects.Node(pygame.Vector2(380,440),media.resize(media.ERROR,40,40))
+
+
+        self.status1 = False
+        self.status2 = False
+        self.status3 = False
+        self.status4 = False
+        self.status5 = False
+        self.status6 = False
+        self.status7 = False
+        self.status8 = False
+        self.status9 = False
+        self.status10 = False
+        self.status11 = False
+        self.status12 = False
+        self.statushard = False
+        self.statusmusic = False
+
+        self.statusmode = "multipleanswer"
+        self.statusbase = 10
+
+        self.read_save_files()
+
+
         self.musicbtntime = objects.Timer(.3)
         self.hardbtntime = objects.Timer(.3)
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
@@ -464,14 +529,166 @@ class ConfigurationMenu:
         self.musicbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.musicbtntime.update(self.deltaTime)
         self.hardbtntime.update(self.deltaTime)
+        
+        self.btnbase.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btnanswermode.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+
+
+        self.btn1.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn2.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn3.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn4.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn5.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn6.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn7.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn8.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn9.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn10.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn11.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.btn12.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        
+        self.buttons_changing_status()
+
+        self.changeimageofbtns()
+    
+    def read_save_files(self):
+        pass
+
+    def changeimageofbtns(self):
+        if self.statusbase == 10:
+            self.btnbase.image = media.BTN10
+            self.btnbase.normal_image = media.BTN10
+            self.btnbase.image_hover = media.BTN10
+            self.btnbase.image_pressed = media.BTN10
+        elif self.statusbase == 12:
+            self.btnbase.image = media.BTN12
+            self.btnbase.normal_image = media.BTN12
+            self.btnbase.image_hover = media.BTN12
+            self.btnbase.image_pressed = media.BTN12
+
+        if self.statusmode == "multipleanswer":
+            self.btnanswermode.image = media.BTNANS1
+            self.btnanswermode.normal_image = media.BTNANS1
+            self.btnanswermode.image_hover = media.BTNANS1
+            self.btnanswermode.image_pressed = media.BTNANS1
+        elif self.statusmode == "write":
+            self.btnanswermode.image = media.BTNANS2
+            self.btnanswermode.normal_image = media.BTNANS2
+            self.btnanswermode.image_hover = media.BTNANS2
+            self.btnanswermode.image_pressed = media.BTNANS2
+
+    def buttons_changing_status(self):
+        if self.btn1.get_pressed:
+            self.btn1.get_pressed = False
+            self.status1 = not self.status1
+        if self.btn2.get_pressed:
+            self.btn2.get_pressed = False
+            self.status2 = not self.status2
+        if self.btn3.get_pressed:
+            self.btn3.get_pressed = False
+            self.status3 = not self.status3
+        if self.btn4.get_pressed:
+            self.btn4.get_pressed = False
+            self.status4 = not self.status4
+        if self.btn5.get_pressed:
+            self.btn5.get_pressed = False
+            self.status5 = not self.status5
+        if self.btn6.get_pressed:
+            self.btn6.get_pressed = False
+            self.status6 = not self.status6
+        if self.btn7.get_pressed:
+            self.btn7.get_pressed = False
+            self.status7 = not self.status7
+        if self.btn8.get_pressed:
+            self.btn8.get_pressed = False
+            self.status8 = not self.status8
+        if self.btn9.get_pressed:
+            self.btn9.get_pressed = False
+            self.status9 = not self.status9
+        if self.btn10.get_pressed:
+            self.btn10.get_pressed = False
+            self.status10 = not self.status10
+        if self.btn11.get_pressed:
+            self.btn11.get_pressed = False
+            self.status11 = not self.status11
+        if self.btn12.get_pressed:
+            self.btn12.get_pressed = False
+            self.status12 = not self.status12
+        if self.musicbtn.get_pressed:
+            self.musicbtn.get_pressed = False
+            self.statusmusic = not self.statusmusic
+        if self.hardbtn.get_pressed:
+            self.hardbtn.get_pressed = False
+            self.statushard = not self.statushard
+
+        if self.btnbase.get_pressed:
+            self.btnbase.get_pressed = False
+            if self.statusbase == 10:
+                self.statusbase = 12
+            else:
+                self.statusbase = 10
+        if self.btnanswermode.get_pressed:
+            self.btnanswermode.get_pressed = False
+            if self.statusmode == "multipleanswer":
+                self.statusmode = "write"
+            else:
+                self.statusmode = "multipleanswer"
+
+
+
 
     def draw(self):
         self.background.draw(self.screen)
         self.quitbtn.draw(self.screen)
         self.musicbtn.draw(self.screen)
+
+        self.btnbase.draw(self.screen)
+        self.btnanswermode.draw(self.screen)
+
+        self.btn1.draw(self.screen)
+        self.btn2.draw(self.screen)
+        self.btn3.draw(self.screen)
+        self.btn4.draw(self.screen)
+        self.btn5.draw(self.screen)
+        self.btn6.draw(self.screen)
+        self.btn7.draw(self.screen)
+        self.btn8.draw(self.screen)
+        self.btn9.draw(self.screen)
+        self.btn10.draw(self.screen)
+        self.btn11.draw(self.screen)
+        self.btn12.draw(self.screen)
+
         self.hardbtn.draw(self.screen)
-        self.musicmode.draw(self.screen)
-        self.hardmode.draw(self.screen)
+
+        if not self.status1:
+            self.btn1status.draw(self.screen)
+        if not self.status2:
+            self.btn2status.draw(self.screen)
+        if not self.status3:
+            self.btn3status.draw(self.screen)
+        if not self.status4:
+            self.btn4status.draw(self.screen)
+        if not self.status5:
+            self.btn5status.draw(self.screen)
+        if not self.status6:
+            self.btn6status.draw(self.screen)
+        if not self.status7:
+            self.btn7status.draw(self.screen)
+        if not self.status8:
+            self.btn8status.draw(self.screen)
+        if not self.status9:
+            self.btn9status.draw(self.screen)
+        if not self.status10:
+            self.btn10status.draw(self.screen)
+        if not self.status11:
+            self.btn11status.draw(self.screen)
+        if not self.status12:
+            self.btn12status.draw(self.screen)
+
+        if not self.statusmusic:
+            self.musicbtnstatus.draw(self.screen)
+        if not self.statushard:
+            self.hardbtnstatus.draw(self.screen)
 
 if __name__ == "__main__":
     game = Game()
