@@ -93,6 +93,10 @@ class Game:
                             self.mainGame.typesend.get_pressed = True
                         if event.key == pygame.K_BACKSPACE:
                             self.mainGame.typeerase.get_pressed = True
+                    if event.key == pygame.K_RETURN and self.mainMenu.running:
+                        self.mainMenu.playbtn.get_pressed = True
+                    if event.key == pygame.K_ESCAPE and self.mainMenu.running:
+                        self.mainMenu.quitbtn.get_pressed = True
                 #if event.type == pygame.MOUSEBUTTONUP:
                 #    self.mousepressed = False
             self.keys = pygame.key.get_pressed()
