@@ -174,6 +174,18 @@ class Game:
                 self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = False, False
                 self.mainGame.typesend.working, self.mainGame.typesend.drawing = False, False
                 self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = False, False
+                self.mainGame.Rtypebtn0.working, self.mainGame.Rtypebtn0.drawing = False, False
+                self.mainGame.Rtypebtn1.working, self.mainGame.Rtypebtn1.drawing = False, False
+                self.mainGame.Rtypebtn2.working, self.mainGame.Rtypebtn2.drawing = False, False
+                self.mainGame.Rtypebtn3.working, self.mainGame.Rtypebtn3.drawing = False, False
+                self.mainGame.Rtypebtn4.working, self.mainGame.Rtypebtn4.drawing = False, False
+                self.mainGame.Rtypebtn5.working, self.mainGame.Rtypebtn5.drawing = False, False
+                self.mainGame.Rtypebtn6.working, self.mainGame.Rtypebtn6.drawing = False, False
+                self.mainGame.Rtypebtn7.working, self.mainGame.Rtypebtn7.drawing = False, False
+                self.mainGame.Rtypebtn8.working, self.mainGame.Rtypebtn8.drawing = False, False
+                self.mainGame.Rtypebtn9.working, self.mainGame.Rtypebtn9.drawing = False, False
+                self.mainGame.Rtypesend.working, self.mainGame.Rtypesend.drawing = False, False
+                self.mainGame.Rtypeerase.working, self.mainGame.Rtypeerase.drawing = False, False
                 self.mainGame.typetextBlank.drawing = False
                 self.mainGame.typetext.drawing = False
             elif self.typeanswer == "write":
@@ -193,6 +205,18 @@ class Game:
                 self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = True, True
                 self.mainGame.typesend.working, self.mainGame.typesend.drawing = True, True
                 self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = True, True
+                self.mainGame.Rtypebtn0.working, self.mainGame.Rtypebtn0.drawing = True, True
+                self.mainGame.Rtypebtn1.working, self.mainGame.Rtypebtn1.drawing = True, True
+                self.mainGame.Rtypebtn2.working, self.mainGame.Rtypebtn2.drawing = True, True
+                self.mainGame.Rtypebtn3.working, self.mainGame.Rtypebtn3.drawing = True, True
+                self.mainGame.Rtypebtn4.working, self.mainGame.Rtypebtn4.drawing = True, True
+                self.mainGame.Rtypebtn5.working, self.mainGame.Rtypebtn5.drawing = True, True
+                self.mainGame.Rtypebtn6.working, self.mainGame.Rtypebtn6.drawing = True, True
+                self.mainGame.Rtypebtn7.working, self.mainGame.Rtypebtn7.drawing = True, True
+                self.mainGame.Rtypebtn8.working, self.mainGame.Rtypebtn8.drawing = True, True
+                self.mainGame.Rtypebtn9.working, self.mainGame.Rtypebtn9.drawing = True, True
+                self.mainGame.Rtypesend.working, self.mainGame.Rtypesend.drawing = True, True
+                self.mainGame.Rtypeerase.working, self.mainGame.Rtypeerase.drawing = True, True
                 self.mainGame.typetextBlank.drawing = True
                 self.mainGame.typetext.drawing = True
 
@@ -297,6 +321,20 @@ class GameLogic:
         self.typetext = objects.Text("9", (550, 85), constant.BLACK, media.NORMAL_FONT)
         self.typenumber = ""
 
+        self.Rtypebtn0 = objects.Button(pygame.Vector2(970,500), media.BTN0, "", media.BTN0, media.BTN0)
+        self.Rtypebtn1 = objects.Button(pygame.Vector2(870,400), media.BTN1, "", media.BTN1, media.BTN1)
+        self.Rtypebtn2 = objects.Button(pygame.Vector2(970,400), media.BTN2, "", media.BTN2, media.BTN2)
+        self.Rtypebtn3 = objects.Button(pygame.Vector2(1070,400), media.BTN3, "", media.BTN3, media.BTN3)
+        self.Rtypebtn4 = objects.Button(pygame.Vector2(870,300), media.BTN4, "", media.BTN4, media.BTN4)
+        self.Rtypebtn5 = objects.Button(pygame.Vector2(970,300), media.BTN5, "", media.BTN5, media.BTN5)
+        self.Rtypebtn6 = objects.Button(pygame.Vector2(1070,300), media.BTN6, "", media.BTN6, media.BTN6)
+        self.Rtypebtn7 = objects.Button(pygame.Vector2(870,200), media.BTN7, "", media.BTN7, media.BTN7)
+        self.Rtypebtn8 = objects.Button(pygame.Vector2(970,200), media.BTN8, "", media.BTN8, media.BTN8)
+        self.Rtypebtn9 = objects.Button(pygame.Vector2(1070,200), media.BTN9, "", media.BTN9, media.BTN9)
+        self.Rtypesend = objects.Button(pygame.Vector2(870,500), media.resize(media.TICKET, 80, 80), "", media.resize(media.TICKET, 80, 80), media.resize(media.TICKET, 80, 80))
+        self.Rtypeerase = objects.Button(pygame.Vector2(1070,500), media.resize(media.ERROR, 80, 80), "", media.resize(media.ERROR, 80, 80), media.resize(media.ERROR, 80, 80))
+
+
 
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp, _hm):
 
@@ -380,6 +418,20 @@ class GameLogic:
         self.typesend.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.typeerase.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
 
+        self.Rtypebtn0.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn1.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn2.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn3.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn4.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn5.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn6.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn7.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn8.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypebtn9.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypesend.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Rtypeerase.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+
+
         self.typetext.text = self.typenumber
 
         self.quitbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
@@ -415,7 +467,42 @@ class GameLogic:
         
 
         # Type
-
+        if self.Rtypebtn0.get_pressed:
+            self.Rtypebtn0.get_pressed = False
+            self.typebtn0.get_pressed = True
+        elif self.Rtypebtn1.get_pressed:
+            self.Rtypebtn1.get_pressed = False
+            self.typebtn1.get_pressed = True
+        elif self.Rtypebtn2.get_pressed:
+            self.Rtypebtn2.get_pressed = False
+            self.typebtn2.get_pressed = True
+        elif self.Rtypebtn3.get_pressed:
+            self.Rtypebtn3.get_pressed = False
+            self.typebtn3.get_pressed = True
+        elif self.Rtypebtn4.get_pressed:
+            self.Rtypebtn4.get_pressed = False
+            self.typebtn4.get_pressed = True
+        elif self.Rtypebtn5.get_pressed:
+            self.Rtypebtn5.get_pressed = False
+            self.typebtn5.get_pressed = True
+        elif self.Rtypebtn6.get_pressed:
+            self.Rtypebtn6.get_pressed = False
+            self.typebtn6.get_pressed = True
+        elif self.Rtypebtn7.get_pressed:
+            self.Rtypebtn7.get_pressed = False
+            self.typebtn7.get_pressed = True
+        elif self.Rtypebtn8.get_pressed:
+            self.Rtypebtn8.get_pressed = False
+            self.typebtn8.get_pressed = True
+        elif self.Rtypebtn9.get_pressed:
+            self.Rtypebtn9.get_pressed = False
+            self.typebtn9.get_pressed = True
+        elif self.Rtypesend.get_pressed:
+            self.Rtypesend.get_pressed = False
+            self.typesend.get_pressed = True
+        elif self.Rtypeerase.get_pressed:
+            self.Rtypeerase.get_pressed = False
+            self.typeerase.get_pressed = True
         if len(self.typenumber) < 11:
             if self.typebtn0.get_pressed:
                 self.typebtn0.get_pressed = False
@@ -530,9 +617,22 @@ class GameLogic:
         self.typebtn8.draw(self.screen)
         self.typebtn9.draw(self.screen)
         self.typeerase.draw(self.screen)
-        self.typetextBlank.draw(self.screen)
         self.typesend.draw(self.screen)
 
+        self.Rtypebtn0.draw(self.screen)
+        self.Rtypebtn1.draw(self.screen)
+        self.Rtypebtn2.draw(self.screen)
+        self.Rtypebtn3.draw(self.screen)
+        self.Rtypebtn4.draw(self.screen)
+        self.Rtypebtn5.draw(self.screen)
+        self.Rtypebtn6.draw(self.screen)
+        self.Rtypebtn7.draw(self.screen)
+        self.Rtypebtn8.draw(self.screen)
+        self.Rtypebtn9.draw(self.screen)
+        self.Rtypeerase.draw(self.screen)
+        self.Rtypesend.draw(self.screen)
+
+        self.typetextBlank.draw(self.screen)
         self.typetext.draw(self.screen)
 
         self.quitbtn.draw(self.screen)
