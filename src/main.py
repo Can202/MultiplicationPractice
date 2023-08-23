@@ -65,6 +65,34 @@ class Game:
                     self.realmouseposX, self.realmouseposY = pygame.mouse.get_pos()
                     self.mouseposX = (self.realmouseposX - self.offset.x) / self.fix
                     self.mouseposY = (self.realmouseposY - self.offset.y) / self.fix
+                if event.type == pygame.KEYDOWN:
+                    if self.typeanswer == "write":
+                        if len(self.mainGame.typenumber) < 11:
+                            if event.key == pygame.K_0 or event.key == pygame.K_KP_0:
+                                if self.mainGame.typenumber != "":
+                                    self.mainGame.typenumber += "0"
+                            if event.key == pygame.K_1 or event.key == pygame.K_KP_1:
+                                self.mainGame.typenumber += "1"
+                            if event.key == pygame.K_2 or event.key == pygame.K_KP_2:
+                                self.mainGame.typenumber += "2"
+                            if event.key == pygame.K_3 or event.key == pygame.K_KP_3:
+                                self.mainGame.typenumber += "3"
+                            if event.key == pygame.K_4 or event.key == pygame.K_KP_4:
+                                self.mainGame.typenumber += "4"
+                            if event.key == pygame.K_5 or event.key == pygame.K_KP_5:
+                                self.mainGame.typenumber += "5"
+                            if event.key == pygame.K_6 or event.key == pygame.K_KP_6:
+                                self.mainGame.typenumber += "6"
+                            if event.key == pygame.K_7 or event.key == pygame.K_KP_7:
+                                self.mainGame.typenumber += "7"
+                            if event.key == pygame.K_8 or event.key == pygame.K_KP_8:
+                                self.mainGame.typenumber += "8"
+                            if event.key == pygame.K_9 or event.key == pygame.K_KP_9:
+                                self.mainGame.typenumber += "9"
+                        if event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
+                            self.mainGame.typesend.get_pressed = True
+                        if event.key == pygame.K_BACKSPACE:
+                            self.mainGame.typeerase.get_pressed = True
                 #if event.type == pygame.MOUSEBUTTONUP:
                 #    self.mousepressed = False
             self.keys = pygame.key.get_pressed()
@@ -96,6 +124,7 @@ class Game:
                 self.mainMenu.running = False
                 self.mainGame.running = True
                 self.mainGame.shuffle = True
+                self.mainGame.typenumber = ""
                 self.mainGame.goods = 0
             elif self.mainGame.quitbtn.get_pressed:
                 self.mainGame.quitbtn.get_pressed = False
@@ -124,7 +153,44 @@ class Game:
 
                     self.mainMenu.running = True
                     self.settingsMenu.running = False
-
+            if self.typeanswer == "multipleanswer":
+                self.mainGame.btn1.working, self.mainGame.btn1.drawing = True, True
+                self.mainGame.btn2.working, self.mainGame.btn2.drawing = True, True
+                self.mainGame.btn3.working, self.mainGame.btn3.drawing = True, True
+                self.mainGame.btn4.working, self.mainGame.btn4.drawing = True, True
+                self.mainGame.typebtn0.working, self.mainGame.typebtn0.drawing = False, False
+                self.mainGame.typebtn1.working, self.mainGame.typebtn1.drawing = False, False
+                self.mainGame.typebtn2.working, self.mainGame.typebtn2.drawing = False, False
+                self.mainGame.typebtn3.working, self.mainGame.typebtn3.drawing = False, False
+                self.mainGame.typebtn4.working, self.mainGame.typebtn4.drawing = False, False
+                self.mainGame.typebtn5.working, self.mainGame.typebtn5.drawing = False, False
+                self.mainGame.typebtn6.working, self.mainGame.typebtn6.drawing = False, False
+                self.mainGame.typebtn7.working, self.mainGame.typebtn7.drawing = False, False
+                self.mainGame.typebtn8.working, self.mainGame.typebtn8.drawing = False, False
+                self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = False, False
+                self.mainGame.typesend.working, self.mainGame.typesend.drawing = False, False
+                self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = False, False
+                self.mainGame.typetextBlank.drawing = False
+                self.mainGame.typetext.drawing = False
+            elif self.typeanswer == "write":
+                self.mainGame.btn1.working, self.mainGame.btn1.drawing = False, False
+                self.mainGame.btn2.working, self.mainGame.btn2.drawing = False, False
+                self.mainGame.btn3.working, self.mainGame.btn3.drawing = False, False
+                self.mainGame.btn4.working, self.mainGame.btn4.drawing = False, False
+                self.mainGame.typebtn0.working, self.mainGame.typebtn0.drawing = True, True
+                self.mainGame.typebtn1.working, self.mainGame.typebtn1.drawing = True, True
+                self.mainGame.typebtn2.working, self.mainGame.typebtn2.drawing = True, True
+                self.mainGame.typebtn3.working, self.mainGame.typebtn3.drawing = True, True
+                self.mainGame.typebtn4.working, self.mainGame.typebtn4.drawing = True, True
+                self.mainGame.typebtn5.working, self.mainGame.typebtn5.drawing = True, True
+                self.mainGame.typebtn6.working, self.mainGame.typebtn6.drawing = True, True
+                self.mainGame.typebtn7.working, self.mainGame.typebtn7.drawing = True, True
+                self.mainGame.typebtn8.working, self.mainGame.typebtn8.drawing = True, True
+                self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = True, True
+                self.mainGame.typesend.working, self.mainGame.typesend.drawing = True, True
+                self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = True, True
+                self.mainGame.typetextBlank.drawing = True
+                self.mainGame.typetext.drawing = True
 
             self.screenfix()
             self.deltaTime = self.clock.tick(60) / 1000.0
@@ -207,6 +273,27 @@ class GameLogic:
         media.ERROR)
         self.erroranimation = False
 
+
+        # Typed numbers
+        self.typebtn0 = objects.Button(pygame.Vector2(220,500), media.BTN0, "", media.BTN0, media.BTN0)
+        self.typebtn1 = objects.Button(pygame.Vector2(120,400), media.BTN1, "", media.BTN1, media.BTN1)
+        self.typebtn2 = objects.Button(pygame.Vector2(220,400), media.BTN2, "", media.BTN2, media.BTN2)
+        self.typebtn3 = objects.Button(pygame.Vector2(320,400), media.BTN3, "", media.BTN3, media.BTN3)
+        self.typebtn4 = objects.Button(pygame.Vector2(120,300), media.BTN4, "", media.BTN4, media.BTN4)
+        self.typebtn5 = objects.Button(pygame.Vector2(220,300), media.BTN5, "", media.BTN5, media.BTN5)
+        self.typebtn6 = objects.Button(pygame.Vector2(320,300), media.BTN6, "", media.BTN6, media.BTN6)
+        self.typebtn7 = objects.Button(pygame.Vector2(120,200), media.BTN7, "", media.BTN7, media.BTN7)
+        self.typebtn8 = objects.Button(pygame.Vector2(220,200), media.BTN8, "", media.BTN8, media.BTN8)
+        self.typebtn9 = objects.Button(pygame.Vector2(320,200), media.BTN9, "", media.BTN9, media.BTN9)
+
+        self.typesend = objects.Button(pygame.Vector2(120,500), media.resize(media.TICKET, 80, 80), "", media.resize(media.TICKET, 80, 80), media.resize(media.TICKET, 80, 80))
+        self.typeerase = objects.Button(pygame.Vector2(320,500), media.resize(media.ERROR, 80, 80), "", media.resize(media.ERROR, 80, 80), media.resize(media.ERROR, 80, 80))
+
+        self.typetextBlank = objects.Node((530, 80), media.resize(media.BLANK, 200, 45))
+        self.typetext = objects.Text("9", (550, 85), constant.BLACK, media.NORMAL_FONT)
+        self.typenumber = ""
+
+
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp, _hm):
 
         self.fix = _fix
@@ -276,6 +363,21 @@ class GameLogic:
         self.btn3.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.btn4.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         
+        self.typebtn0.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn1.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn2.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn3.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn4.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn5.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn6.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn7.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn8.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typebtn9.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typesend.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.typeerase.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+
+        self.typetext.text = self.typenumber
+
         self.quitbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
 
         if self.btn1.get_pressed:
@@ -307,6 +409,55 @@ class GameLogic:
                     self.good = -1
             self.btn4.get_pressed = False
         
+
+        # Type
+
+        if len(self.typenumber) < 11:
+            if self.typebtn0.get_pressed:
+                self.typebtn0.get_pressed = False
+                if self.typenumber != "":
+                    self.typenumber += "0"
+            elif self.typebtn1.get_pressed:
+                self.typebtn1.get_pressed = False
+                self.typenumber += "1"
+            elif self.typebtn2.get_pressed:
+                self.typebtn2.get_pressed = False
+                self.typenumber += "2"
+            elif self.typebtn3.get_pressed:
+                self.typebtn3.get_pressed = False
+                self.typenumber += "3"
+            elif self.typebtn4.get_pressed:
+                self.typebtn4.get_pressed = False
+                self.typenumber += "4"
+            elif self.typebtn5.get_pressed:
+                self.typebtn5.get_pressed = False
+                self.typenumber += "5"
+            elif self.typebtn6.get_pressed:
+                self.typebtn6.get_pressed = False
+                self.typenumber += "6"
+            elif self.typebtn7.get_pressed:
+                self.typebtn7.get_pressed = False
+                self.typenumber += "7"
+            elif self.typebtn8.get_pressed:
+                self.typebtn8.get_pressed = False
+                self.typenumber += "8"
+            elif self.typebtn9.get_pressed:
+                self.typebtn9.get_pressed = False
+                self.typenumber += "9"
+        if self.typeerase.get_pressed:
+            self.typeerase.get_pressed = False
+            self.typenumber = ""
+        if self.typesend.get_pressed:
+            self.typesend.get_pressed = False
+            if self.typenumber != "":
+                if self.correctbtn.getStr() == self.typenumber:
+                    self.good = 1
+                else:
+                    self.good = -1
+
+
+
+
         if self.good == 1:
             sound.GOOD.play()
             self.shuffle = True
@@ -314,6 +465,7 @@ class GameLogic:
             self.goods += 1
             self.good = 0
             self.ticketanimation = True
+            self.typenumber = ""
         elif self.good == -1:
             if self.hardmode:
                 self.goods = 0
@@ -321,6 +473,7 @@ class GameLogic:
             self.timegood.timing = True
             self.good = 0
             self.erroranimation = True
+            self.typenumber = ""
 
         if self.ticketanimation:
             if self.timegood.time < .25:
@@ -361,6 +514,22 @@ class GameLogic:
         self.btn2.draw(self.screen)
         self.btn3.draw(self.screen)
         self.btn4.draw(self.screen)
+
+        self.typebtn0.draw(self.screen)
+        self.typebtn1.draw(self.screen)
+        self.typebtn2.draw(self.screen)
+        self.typebtn3.draw(self.screen)
+        self.typebtn4.draw(self.screen)
+        self.typebtn5.draw(self.screen)
+        self.typebtn6.draw(self.screen)
+        self.typebtn7.draw(self.screen)
+        self.typebtn8.draw(self.screen)
+        self.typebtn9.draw(self.screen)
+        self.typeerase.draw(self.screen)
+        self.typetextBlank.draw(self.screen)
+        self.typesend.draw(self.screen)
+
+        self.typetext.draw(self.screen)
 
         self.quitbtn.draw(self.screen)
 
@@ -448,9 +617,7 @@ class ConfigurationMenu:
 
         self.btnbase = objects.Button(pygame.Vector2(1170,290), media.BTN10, "", media.BTN12, media.BTN12)        
         
-        # Temporaly disabled
         self.btnanswermode = objects.Button(pygame.Vector2(1170,400), media.BTNANS1, "", media.BTNANS1, media.BTNANS1)
-        self.btnanswermode.drawing = False
 
 
         self.btn1 = objects.Button(pygame.Vector2(30,180), media.BTN1, "", media.BTN1, media.BTN1)

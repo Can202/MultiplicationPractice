@@ -32,36 +32,39 @@ class Button(Node):
         self.normal_image = self.image
         self.image_hover = _imagehover
         self.image_pressed = _imagepressed
+        self.working = True
     
     def update(self, deltaTime, mousepressed = False, mouseposX = 0, mouseposY = 0, fix=1, offset=pygame.Vector2(0,0)):
-        super().update(deltaTime)
-        self.rect = self.image.get_rect()
-        self.rect.left += self.position.x
-        self.rect.top += self.position.y
-        mouse_position_X,mouse_position_Y = mouseposX, mouseposY
-        if (self.rect.left < mouse_position_X < self.rect.right) and (self.rect.top < mouse_position_Y < self.rect.bottom):
-            if platformdetect.platform() != "android":
-                self.image = self.image_hover
+        if self.working:
+            super().update(deltaTime)
+            self.rect = self.image.get_rect()
+            self.rect.left += self.position.x
+            self.rect.top += self.position.y
+            mouse_position_X,mouse_position_Y = mouseposX, mouseposY
+            if (self.rect.left < mouse_position_X < self.rect.right) and (self.rect.top < mouse_position_Y < self.rect.bottom):
+                if platformdetect.platform() != "android":
+                    self.image = self.image_hover
+                else:
+                    self.image = self.normal_image
+                if mousepressed:
+                    self.image = self.image_pressed
+                    self.get_pressed = True
+            elif (self.rect.left < mouseposX < self.rect.right) and (self.rect.top < mouseposY < self.rect.bottom):
+                if platformdetect.platform() != "android":
+                    self.image = self.image_hover
+                else:
+                    self.image = self.normal_image
+                if mousepressed:
+                    self.image = self.image_pressed
+                    self.get_pressed = True
             else:
                 self.image = self.normal_image
-            if mousepressed:
-                self.image = self.image_pressed
-                self.get_pressed = True
-        elif (self.rect.left < mouseposX < self.rect.right) and (self.rect.top < mouseposY < self.rect.bottom):
-            if platformdetect.platform() != "android":
-                self.image = self.image_hover
-            else:
-                self.image = self.normal_image
-            if mousepressed:
-                self.image = self.image_pressed
-                self.get_pressed = True
-        else:
-            self.image = self.normal_image
 
     
     def draw(self, screen, fix: float = 1, xoffset = 0):
-        super().draw(screen)
-        self.text.draw(screen)
+        if self.drawing:
+            super().draw(screen)
+            self.text.draw(screen)
 
 class Text():
     def __init__(self, 
@@ -73,10 +76,12 @@ class Text():
         self.position = _position
         self.font = _font
         self.color = _color
+        self.drawing = True
 
     def draw(self, screen):
-        text_surface = self.font.render(self.text, True, self.color)
-        screen.blit(text_surface, self.position)
+        if self.drawing:
+            text_surface = self.font.render(self.text, True, self.color)
+            screen.blit(text_surface, self.position)
             
 
 class Timer:
