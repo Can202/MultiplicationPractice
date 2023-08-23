@@ -1,3 +1,4 @@
+import os
 from os import environ
 from sys import platform as _sys_platform
 import json
@@ -15,6 +16,22 @@ def platform():
 def getPath():
     if platform()=="android":
         return "/data/data/com.can202.multiplicationpractice/files/app/"
+    else:
+        return ""
+
+def getSavePath():
+    if platform()=="android":
+
+        if os.path.exists("/storage/emulated/0/Documents/"):
+            if os.path.exists("/storage/emulated/0/Documents/MultiplicationPractice/"):
+                pass
+            else:
+                os.mkdir("/storage/emulated/0/Documents/MultiplicationPractice/")
+        else:
+            os.mkdir("/storage/emulated/0/Documents/")
+            os.mkdir("/storage/emulated/0/Documents/MultiplicationPractice/")
+
+        return "/storage/emulated/0/Documents/MultiplicationPractice/"
     else:
         return ""
     

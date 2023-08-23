@@ -786,8 +786,8 @@ class ConfigurationMenu:
         self.hardbtntime = objects.Timer(.3)
 
     def readData(self):
-        if os.path.exists(f"{platformdetect.getPath()}media/conf.dat"):
-            jsonfile = platformdetect.readFile(f"{platformdetect.getPath()}media/conf.dat")
+        if os.path.exists(f"{platformdetect.getSavePath()}conf.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}conf.dat")
             self.status1 = platformdetect.getjsondataifexists(self.status1, jsonfile, "status1")
             self.status2 = platformdetect.getjsondataifexists(self.status2, jsonfile, "status2")
             self.status3 = platformdetect.getjsondataifexists(self.status3, jsonfile, "status3")
@@ -824,7 +824,7 @@ class ConfigurationMenu:
         data["statushard"] = self.statushard
         data["statusbase"] = self.statusbase
         data["statusmode"] = self.statusmode
-        platformdetect.writeFile(f"{platformdetect.getPath()}media/conf.dat", data)
+        platformdetect.writeFile(f"{platformdetect.getSavePath()}conf.dat", data)
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
 
         self.fix = _fix
