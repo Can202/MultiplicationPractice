@@ -165,7 +165,7 @@ class GameLogic:
         
         self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
 
-        self.correctanswer = objects.Text("12 x 12",pygame.Vector2((constant.WIDTH - 250)/2, (constant.HEIGHT-40)/2), constant.WHITE, media.BIG_FONT)
+        self.correctanswer = objects.Text("12 x 12",pygame.Vector2((constant.WIDTH - 250)/2, (constant.HEIGHT-90)/2), constant.WHITE, media.BIG_FONT)
         self.background = objects.Node(pygame.Vector2(0,0), media.BACKGROUND)
         self.numberlist = [1,2,3,4,5,6,7,8,9,10,11,12]
         self.maxnumber = 12
@@ -198,13 +198,13 @@ class GameLogic:
         self.good = 0
         self.timegood = objects.Timer(.5)
         self.ticketonScreen = objects.Node(
-            pygame.Vector2((constant.WIDTH - media.TICKET.get_width())/2, constant.HEIGHT),
+            pygame.Vector2((constant.WIDTH - media.TICKET.get_width())/2, (constant.HEIGHT - media.TICKET.get_height())/2),
             media.TICKET)
         self.ticketanimation = False
 
         self.erroronScreen = objects.Node(
-            pygame.Vector2((constant.WIDTH - media.ERROR.get_width())/2, constant.HEIGHT),
-            media.ERROR)
+            pygame.Vector2((constant.WIDTH - media.ERROR.get_width())/2, (constant.HEIGHT - media.ERROR.get_height())/2), 
+        media.ERROR)
         self.erroranimation = False
 
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp, _hm):
@@ -323,20 +323,28 @@ class GameLogic:
             self.erroranimation = True
 
         if self.ticketanimation:
-            if self.timegood.time < .125:
-                self.ticketonScreen.position.y -= 3316 * self.deltaTime
-            if self.timegood.time > .375:
-                self.ticketonScreen.position.y += 3316 * self.deltaTime
-        
+            if self.timegood.time < .25:
+                self.ticketonScreen.image = media.resize(media.TICKET, abs(int(media.TICKET.get_width() * self.timegood.time/0.25)),abs(int(media.TICKET.get_height() * self.timegood.time/0.25)))
+                self.ticketonScreen.position = pygame.Vector2((constant.WIDTH - self.ticketonScreen.image.get_width())/2, (constant.HEIGHT - self.ticketonScreen.image.get_height())/2)
+            if self.timegood.time > .25:
+                temp = .5 - self.timegood.time
+                self.ticketonScreen.image = media.resize(media.TICKET, abs(int(media.TICKET.get_width() * temp/0.25)),abs(int(media.TICKET.get_height() * temp/0.25)))
+                self.ticketonScreen.position = pygame.Vector2((constant.WIDTH - self.ticketonScreen.image.get_width())/2, (constant.HEIGHT - self.ticketonScreen.image.get_height())/2)
+
+        else:
+            self.ticketonScreen.image = media.resize(media.TICKET, 0, 0)
         if self.erroranimation:
-            if self.timegood.time < .125:
-                self.erroronScreen.position.y -= 3312*self.deltaTime
-            if self.timegood.time > .375:
-                self.erroronScreen.position.y += 3312*self.deltaTime
+            if self.timegood.time < .25:
+                self.erroronScreen.image = media.resize(media.ERROR, abs(int(media.ERROR.get_width() * self.timegood.time/0.25)),abs(int(media.ERROR.get_height() * self.timegood.time/0.25)))
+                self.erroronScreen.position = pygame.Vector2((constant.WIDTH - self.erroronScreen.image.get_width())/2, (constant.HEIGHT - self.erroronScreen.image.get_height())/2)
+            if self.timegood.time > .25:
+                temp = .5 - self.timegood.time
+                self.erroronScreen.image = media.resize(media.ERROR, abs(int(media.ERROR.get_width() * temp/0.25)),abs(int(media.ERROR.get_height() * temp/0.25)))
+                self.erroronScreen.position = pygame.Vector2((constant.WIDTH - self.erroronScreen.image.get_width())/2, (constant.HEIGHT - self.erroronScreen.image.get_height())/2)
+        else:
+            self.erroronScreen.image = media.resize(media.ERROR, 0, 0)
         if self.timegood.timing == False:
-            self.ticketonScreen.position.y = constant.HEIGHT
             self.ticketanimation = False
-            self.erroronScreen.position.y = constant.HEIGHT
             self.erroranimation = False
 
 
