@@ -23,12 +23,15 @@ class Game:
 
         self.current_date = datetime.date.today()
         self.yesterday_date = self.current_date - datetime.timedelta(days=1)
+        self.lastdate = datetime.date.today() - datetime.timedelta(days=10)
+        self.gotDaystreakToday = False
         self.daystreak = 0
         self.daystreak_goal = 10
         self.profile = ""
         self.profiles = [None]
         self.getProfile()
         self.writeProfile()
+        self.updateDayStreak()
 
         self.mouseposX = 0
         self.mouseposY = 0
@@ -116,6 +119,21 @@ class Game:
             
             if self.musicallowed == False:
                 self.sound_channel.stop()
+            self.settingsMenu.daystreak = self.daystreak
+            self.settingsMenu.lastdate = self.lastdate
+            self.mainMenu.daystreakText.text = str(self.daystreak)
+            if self.gotDaystreakToday:
+                self.mainMenu.daystreakIcon.image = media.DAYSTREAK
+            else:
+                self.mainMenu.daystreakIcon.image = media.NODAYSTREAK
+                if self.mainGame.goods >= self.daystreak_goal:
+                    self.daystreak += 1
+                    self.gotDaystreakToday = True
+                    self.lastdate = datetime.date.today()
+                    self.settingsMenu.lastdate = self.lastdate
+                    self.settingsMenu.daystreak = self.daystreak
+                    self.settingsMenu.writeData()
+                    
                 
             if self.mainGame.running:
                 self.mainGame.mainloop(self.fix, self.offset,
@@ -198,6 +216,14 @@ class Game:
     def updateListConfig(self):
         self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
 
+    def updateDayStreak(self):
+        self.readDayStreak()
+        if self.lastdate == self.current_date:
+            self.gotDaystreakToday = True
+        else:
+            self.gotDaystreakToday = False
+        if self.lastdate < self.yesterday_date:
+            self.daystreak = 0
 
     def updateTypeAnswer(self):
         if self.typeanswer == "multipleanswer":
@@ -291,6 +317,18 @@ class Game:
         data["profiles"] = self.profiles
         platformdetect.writeFile(f"{platformdetect.getSavePath()}media/profiles.dat", data)
     
+    def readDayStreak(self):
+        if os.path.exists(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat")
+
+            self.daystreak = platformdetect.getjsondataifexists(0, jsonfile, "daystreak")
+            lastdate = platformdetect.getjsondataifexists("w0", jsonfile, "lastdaystreakday")
+            if lastdate != "w0":
+                self.lastdate = datetime.datetime.fromisoformat(lastdate).date()
+        else:
+            self.daystreak = 0
+            self.lastdate = datetime.date.today() - datetime.timedelta(days=10)
+
     def changeProfile(self):
         index = self.profiles.index(self.profile) + 1
         if index == len(self.profiles):
@@ -305,6 +343,7 @@ class Game:
         self.updateListConfig()
         self.updateConfig()
         self.updateTypeAnswer()
+        self.updateDayStreak()
 
         print(f"Change to {self.profile}")
         
@@ -725,7 +764,7 @@ class Menu:
                                          media.resize(media.BTN, 155,70), self.profile,
                                          media.resize(media.BTN_HOVER, 155,70), media.resize(media.BTN_PRESSED, 155,70),
                                          pygame.Vector2(20,20))
-        self.daystreakIcon = objects.Node(pygame.Vector2(620, 25), media.DAYSTREAK)
+        self.daystreakIcon = objects.Node(pygame.Vector2(620, 28), media.DAYSTREAK)
         self.daystreakText = objects.Text("0", pygame.Vector2(690, 45), constant.WHITE, media.NORMAL_FONT)
 
 
@@ -774,6 +813,8 @@ class ConfigurationMenu:
     def __init__(self, _running = True, _profile="") -> None:
         self.profile = _profile
         self.running = _running
+        self.daystreak = 0
+        self.lastdate = datetime.date.today() - datetime.timedelta(days=10)
         
         self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
 
@@ -900,6 +941,9 @@ class ConfigurationMenu:
         data["statushard"] = self.statushard
         data["statusbase"] = self.statusbase
         data["statusmode"] = self.statusmode
+
+        data["daystreak"] = self.daystreak
+        data["lastdaystreakday"] = self.lastdate.isoformat()
         platformdetect.writeFile(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat", data)
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
 
