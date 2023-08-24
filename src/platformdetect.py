@@ -22,17 +22,19 @@ def getPath():
 def getSavePath():
     if platform()=="android":
 
-        if os.path.exists("/storage/emulated/0/Documents/"):
-            if os.path.exists("/storage/emulated/0/Documents/MultiplicationPractice/"):
-                pass
-            else:
-                os.mkdir("/storage/emulated/0/Documents/MultiplicationPractice/")
-        else:
+        if not os.path.exists("/storage/emulated/0/Documents/"):
             os.mkdir("/storage/emulated/0/Documents/")
+        
+        if not os.path.exists("/storage/emulated/0/Documents/MultiplicationPractice/"):
             os.mkdir("/storage/emulated/0/Documents/MultiplicationPractice/")
+
+        if not os.path.exists("/storage/emulated/0/Documents/MultiplicationPractice/data"):
+            os.mkdir("/storage/emulated/0/Documents/MultiplicationPractice/data")
 
         return "/storage/emulated/0/Documents/MultiplicationPractice/"
     else:
+        if not os.path.exists("data"):
+            os.mkdir("data")
         return ""
     
 def readFile(path):

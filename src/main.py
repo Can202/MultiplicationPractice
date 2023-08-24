@@ -13,7 +13,7 @@ pygame.init()
 class Game:
     def __init__(self) -> None:
 
-        self.window = pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.FULLSCREEN)
+        self.window = pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.RESIZABLE)
         
         pygame.display.set_caption("Game")
 
@@ -303,8 +303,8 @@ class Game:
             self.offset.y = (height - (constant.HEIGHT * self.fix)) / 2
 
     def getProfile(self):
-        if os.path.exists(f"{platformdetect.getSavePath()}media/profiles.dat"):
-            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}media/profiles.dat")
+        if os.path.exists(f"{platformdetect.getSavePath()}data/profiles.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}data/profiles.dat")
 
             self.profile = platformdetect.getjsondataifexists("User", jsonfile, "current_profile")
             self.profiles = platformdetect.getjsondataifexists(self.profiles, jsonfile, "profiles")
@@ -315,11 +315,11 @@ class Game:
         data = {}
         data["current_profile"] = self.profile
         data["profiles"] = self.profiles
-        platformdetect.writeFile(f"{platformdetect.getSavePath()}media/profiles.dat", data)
+        platformdetect.writeFile(f"{platformdetect.getSavePath()}data/profiles.dat", data)
     
     def readDayStreak(self):
-        if os.path.exists(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat"):
-            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat")
+        if os.path.exists(f"{platformdetect.getSavePath()}data/{self.profile}-data.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}data/{self.profile}-data.dat")
 
             self.daystreak = platformdetect.getjsondataifexists(0, jsonfile, "daystreak")
             lastdate = platformdetect.getjsondataifexists("w0", jsonfile, "lastdaystreakday")
@@ -903,8 +903,8 @@ class ConfigurationMenu:
         self.hardbtntime = objects.Timer(.3)
 
     def readData(self):
-        if os.path.exists(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat"):
-            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat")
+        if os.path.exists(f"{platformdetect.getSavePath()}data/{self.profile}-data.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}data/{self.profile}-data.dat")
             self.status1 = platformdetect.getjsondataifexists(self.status1, jsonfile, "status1")
             self.status2 = platformdetect.getjsondataifexists(self.status2, jsonfile, "status2")
             self.status3 = platformdetect.getjsondataifexists(self.status3, jsonfile, "status3")
@@ -944,7 +944,7 @@ class ConfigurationMenu:
 
         data["daystreak"] = self.daystreak
         data["lastdaystreakday"] = self.lastdate.isoformat()
-        platformdetect.writeFile(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat", data)
+        platformdetect.writeFile(f"{platformdetect.getSavePath()}data/{self.profile}-data.dat", data)
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
 
         self.fix = _fix
