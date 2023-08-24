@@ -68,7 +68,7 @@ class Game:
         while self.running:
             self.current_date = datetime.date.today()
             if self.current_date > self.current_date_since_started:
-                print("Changed Day")
+                print("Day Changed")
                 self.yesterday_date = self.current_date - datetime.timedelta(days=1)
                 self.updateDayStreak()
 
