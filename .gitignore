@@ -3,4 +3,4 @@ buildozer/bin
 buildozer/.buildozer
 pyinstaller/
 exports/
-src/media/conf.dat
+src/media/*.dat

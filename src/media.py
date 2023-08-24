@@ -19,6 +19,7 @@ HARDMODE = pygame.image.load(f"{path}media/hard.png")
 MUSICMODE = pygame.image.load(f"{path}media/music.png")
 BLANK = pygame.image.load(f"{path}media/blank.png")
 MENU = pygame.image.load(f"{path}media/menu.png")
+DAYSTREAK = pygame.image.load(f"{path}media/daystreak.png")
 
 
 BTN0 = resize(pygame.image.load(f"{path}media/btn0.png"), 80, 80)

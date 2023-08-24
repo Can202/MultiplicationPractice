@@ -6,6 +6,7 @@ import random
 import os
 import sound
 import platformdetect
+import datetime
 
 pygame.init()
 
@@ -18,6 +19,16 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.running = True
+
+
+        self.current_date = datetime.date.today()
+        self.yesterday_date = self.current_date - datetime.timedelta(days=1)
+        self.daystreak = 0
+        self.daystreak_goal = 10
+        self.profile = ""
+        self.profiles = [None]
+        self.getProfile()
+        self.writeProfile()
 
         self.mouseposX = 0
         self.mouseposY = 0
@@ -32,8 +43,8 @@ class Game:
         self.mousepressed = False
 
         self.mainGame = GameLogic(False)
-        self.mainMenu = Menu()
-        self.settingsMenu = ConfigurationMenu(False)
+        self.mainMenu = Menu(True, self.profile)
+        self.settingsMenu = ConfigurationMenu(False, self.profile)
 
         self.sound_channel = pygame.mixer.Channel(2)
         self.musicallowed = True
@@ -43,7 +54,6 @@ class Game:
         self.mainGame.numberlist = None
         self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
         self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
-
 
 
 
@@ -123,6 +133,11 @@ class Game:
                                     self.mouseposX, self.mouseposY,
                                     self.mousepressed)
             
+            if self.mainMenu.Profilebtn.get_pressed:
+                self.mainMenu.Profilebtn.get_pressed = False
+                self.changeProfile()
+
+
             if self.mainMenu.playbtn.get_pressed:
                 self.mainMenu.playbtn.get_pressed = False
                 self.mainMenu.running = False
@@ -148,78 +163,16 @@ class Game:
             elif self.settingsMenu.quitbtn.get_pressed:
                 self.settingsMenu.quitbtn.get_pressed = False
                 self.mainGame.numberlist = None
-                self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
+                self.updateListConfig()
                 if self.mainGame.numberlist:
 
-                    self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
-                    
+                    self.updateConfig()
+
                     self.settingsMenu.writeData()
 
                     self.mainMenu.running = True
                     self.settingsMenu.running = False
-            if self.typeanswer == "multipleanswer":
-                self.mainGame.btn1.working, self.mainGame.btn1.drawing = True, True
-                self.mainGame.btn2.working, self.mainGame.btn2.drawing = True, True
-                self.mainGame.btn3.working, self.mainGame.btn3.drawing = True, True
-                self.mainGame.btn4.working, self.mainGame.btn4.drawing = True, True
-                self.mainGame.typebtn0.working, self.mainGame.typebtn0.drawing = False, False
-                self.mainGame.typebtn1.working, self.mainGame.typebtn1.drawing = False, False
-                self.mainGame.typebtn2.working, self.mainGame.typebtn2.drawing = False, False
-                self.mainGame.typebtn3.working, self.mainGame.typebtn3.drawing = False, False
-                self.mainGame.typebtn4.working, self.mainGame.typebtn4.drawing = False, False
-                self.mainGame.typebtn5.working, self.mainGame.typebtn5.drawing = False, False
-                self.mainGame.typebtn6.working, self.mainGame.typebtn6.drawing = False, False
-                self.mainGame.typebtn7.working, self.mainGame.typebtn7.drawing = False, False
-                self.mainGame.typebtn8.working, self.mainGame.typebtn8.drawing = False, False
-                self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = False, False
-                self.mainGame.typesend.working, self.mainGame.typesend.drawing = False, False
-                self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = False, False
-                self.mainGame.Rtypebtn0.working, self.mainGame.Rtypebtn0.drawing = False, False
-                self.mainGame.Rtypebtn1.working, self.mainGame.Rtypebtn1.drawing = False, False
-                self.mainGame.Rtypebtn2.working, self.mainGame.Rtypebtn2.drawing = False, False
-                self.mainGame.Rtypebtn3.working, self.mainGame.Rtypebtn3.drawing = False, False
-                self.mainGame.Rtypebtn4.working, self.mainGame.Rtypebtn4.drawing = False, False
-                self.mainGame.Rtypebtn5.working, self.mainGame.Rtypebtn5.drawing = False, False
-                self.mainGame.Rtypebtn6.working, self.mainGame.Rtypebtn6.drawing = False, False
-                self.mainGame.Rtypebtn7.working, self.mainGame.Rtypebtn7.drawing = False, False
-                self.mainGame.Rtypebtn8.working, self.mainGame.Rtypebtn8.drawing = False, False
-                self.mainGame.Rtypebtn9.working, self.mainGame.Rtypebtn9.drawing = False, False
-                self.mainGame.Rtypesend.working, self.mainGame.Rtypesend.drawing = False, False
-                self.mainGame.Rtypeerase.working, self.mainGame.Rtypeerase.drawing = False, False
-                self.mainGame.typetextBlank.drawing = False
-                self.mainGame.typetext.drawing = False
-            elif self.typeanswer == "write":
-                self.mainGame.btn1.working, self.mainGame.btn1.drawing = False, False
-                self.mainGame.btn2.working, self.mainGame.btn2.drawing = False, False
-                self.mainGame.btn3.working, self.mainGame.btn3.drawing = False, False
-                self.mainGame.btn4.working, self.mainGame.btn4.drawing = False, False
-                self.mainGame.typebtn0.working, self.mainGame.typebtn0.drawing = True, True
-                self.mainGame.typebtn1.working, self.mainGame.typebtn1.drawing = True, True
-                self.mainGame.typebtn2.working, self.mainGame.typebtn2.drawing = True, True
-                self.mainGame.typebtn3.working, self.mainGame.typebtn3.drawing = True, True
-                self.mainGame.typebtn4.working, self.mainGame.typebtn4.drawing = True, True
-                self.mainGame.typebtn5.working, self.mainGame.typebtn5.drawing = True, True
-                self.mainGame.typebtn6.working, self.mainGame.typebtn6.drawing = True, True
-                self.mainGame.typebtn7.working, self.mainGame.typebtn7.drawing = True, True
-                self.mainGame.typebtn8.working, self.mainGame.typebtn8.drawing = True, True
-                self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = True, True
-                self.mainGame.typesend.working, self.mainGame.typesend.drawing = True, True
-                self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = True, True
-                self.mainGame.Rtypebtn0.working, self.mainGame.Rtypebtn0.drawing = True, True
-                self.mainGame.Rtypebtn1.working, self.mainGame.Rtypebtn1.drawing = True, True
-                self.mainGame.Rtypebtn2.working, self.mainGame.Rtypebtn2.drawing = True, True
-                self.mainGame.Rtypebtn3.working, self.mainGame.Rtypebtn3.drawing = True, True
-                self.mainGame.Rtypebtn4.working, self.mainGame.Rtypebtn4.drawing = True, True
-                self.mainGame.Rtypebtn5.working, self.mainGame.Rtypebtn5.drawing = True, True
-                self.mainGame.Rtypebtn6.working, self.mainGame.Rtypebtn6.drawing = True, True
-                self.mainGame.Rtypebtn7.working, self.mainGame.Rtypebtn7.drawing = True, True
-                self.mainGame.Rtypebtn8.working, self.mainGame.Rtypebtn8.drawing = True, True
-                self.mainGame.Rtypebtn9.working, self.mainGame.Rtypebtn9.drawing = True, True
-                self.mainGame.Rtypesend.working, self.mainGame.Rtypesend.drawing = True, True
-                self.mainGame.Rtypeerase.working, self.mainGame.Rtypeerase.drawing = True, True
-                self.mainGame.typetextBlank.drawing = True
-                self.mainGame.typetext.drawing = True
-
+            self.updateTypeAnswer()
             self.screenfix()
             self.deltaTime = self.clock.tick(60) / 1000.0
 
@@ -240,7 +193,78 @@ class Game:
 
             pygame.display.update()
     
+    def updateConfig(self):
+        self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
+    def updateListConfig(self):
+        self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
+
+
+    def updateTypeAnswer(self):
+        if self.typeanswer == "multipleanswer":
+            self.mainGame.btn1.working, self.mainGame.btn1.drawing = True, True
+            self.mainGame.btn2.working, self.mainGame.btn2.drawing = True, True
+            self.mainGame.btn3.working, self.mainGame.btn3.drawing = True, True
+            self.mainGame.btn4.working, self.mainGame.btn4.drawing = True, True
+            self.mainGame.typebtn0.working, self.mainGame.typebtn0.drawing = False, False
+            self.mainGame.typebtn1.working, self.mainGame.typebtn1.drawing = False, False
+            self.mainGame.typebtn2.working, self.mainGame.typebtn2.drawing = False, False
+            self.mainGame.typebtn3.working, self.mainGame.typebtn3.drawing = False, False
+            self.mainGame.typebtn4.working, self.mainGame.typebtn4.drawing = False, False
+            self.mainGame.typebtn5.working, self.mainGame.typebtn5.drawing = False, False
+            self.mainGame.typebtn6.working, self.mainGame.typebtn6.drawing = False, False
+            self.mainGame.typebtn7.working, self.mainGame.typebtn7.drawing = False, False
+            self.mainGame.typebtn8.working, self.mainGame.typebtn8.drawing = False, False
+            self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = False, False
+            self.mainGame.typesend.working, self.mainGame.typesend.drawing = False, False
+            self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = False, False
+            self.mainGame.Rtypebtn0.working, self.mainGame.Rtypebtn0.drawing = False, False
+            self.mainGame.Rtypebtn1.working, self.mainGame.Rtypebtn1.drawing = False, False
+            self.mainGame.Rtypebtn2.working, self.mainGame.Rtypebtn2.drawing = False, False
+            self.mainGame.Rtypebtn3.working, self.mainGame.Rtypebtn3.drawing = False, False
+            self.mainGame.Rtypebtn4.working, self.mainGame.Rtypebtn4.drawing = False, False
+            self.mainGame.Rtypebtn5.working, self.mainGame.Rtypebtn5.drawing = False, False
+            self.mainGame.Rtypebtn6.working, self.mainGame.Rtypebtn6.drawing = False, False
+            self.mainGame.Rtypebtn7.working, self.mainGame.Rtypebtn7.drawing = False, False
+            self.mainGame.Rtypebtn8.working, self.mainGame.Rtypebtn8.drawing = False, False
+            self.mainGame.Rtypebtn9.working, self.mainGame.Rtypebtn9.drawing = False, False
+            self.mainGame.Rtypesend.working, self.mainGame.Rtypesend.drawing = False, False
+            self.mainGame.Rtypeerase.working, self.mainGame.Rtypeerase.drawing = False, False
+            self.mainGame.typetextBlank.drawing = False
+            self.mainGame.typetext.drawing = False
+        elif self.typeanswer == "write":
+            self.mainGame.btn1.working, self.mainGame.btn1.drawing = False, False
+            self.mainGame.btn2.working, self.mainGame.btn2.drawing = False, False
+            self.mainGame.btn3.working, self.mainGame.btn3.drawing = False, False
+            self.mainGame.btn4.working, self.mainGame.btn4.drawing = False, False
+            self.mainGame.typebtn0.working, self.mainGame.typebtn0.drawing = True, True
+            self.mainGame.typebtn1.working, self.mainGame.typebtn1.drawing = True, True
+            self.mainGame.typebtn2.working, self.mainGame.typebtn2.drawing = True, True
+            self.mainGame.typebtn3.working, self.mainGame.typebtn3.drawing = True, True
+            self.mainGame.typebtn4.working, self.mainGame.typebtn4.drawing = True, True
+            self.mainGame.typebtn5.working, self.mainGame.typebtn5.drawing = True, True
+            self.mainGame.typebtn6.working, self.mainGame.typebtn6.drawing = True, True
+            self.mainGame.typebtn7.working, self.mainGame.typebtn7.drawing = True, True
+            self.mainGame.typebtn8.working, self.mainGame.typebtn8.drawing = True, True
+            self.mainGame.typebtn9.working, self.mainGame.typebtn9.drawing = True, True
+            self.mainGame.typesend.working, self.mainGame.typesend.drawing = True, True
+            self.mainGame.typeerase.working, self.mainGame.typeerase.drawing = True, True
+            self.mainGame.Rtypebtn0.working, self.mainGame.Rtypebtn0.drawing = True, True
+            self.mainGame.Rtypebtn1.working, self.mainGame.Rtypebtn1.drawing = True, True
+            self.mainGame.Rtypebtn2.working, self.mainGame.Rtypebtn2.drawing = True, True
+            self.mainGame.Rtypebtn3.working, self.mainGame.Rtypebtn3.drawing = True, True
+            self.mainGame.Rtypebtn4.working, self.mainGame.Rtypebtn4.drawing = True, True
+            self.mainGame.Rtypebtn5.working, self.mainGame.Rtypebtn5.drawing = True, True
+            self.mainGame.Rtypebtn6.working, self.mainGame.Rtypebtn6.drawing = True, True
+            self.mainGame.Rtypebtn7.working, self.mainGame.Rtypebtn7.drawing = True, True
+            self.mainGame.Rtypebtn8.working, self.mainGame.Rtypebtn8.drawing = True, True
+            self.mainGame.Rtypebtn9.working, self.mainGame.Rtypebtn9.drawing = True, True
+            self.mainGame.Rtypesend.working, self.mainGame.Rtypesend.drawing = True, True
+            self.mainGame.Rtypeerase.working, self.mainGame.Rtypeerase.drawing = True, True
+            self.mainGame.typetextBlank.drawing = True
+            self.mainGame.typetext.drawing = True
+    
     def screenfix(self):
+
         height = self.window.get_height()
         width = self.window.get_width()
         if (height / 9) <= (width/16):
@@ -251,6 +275,43 @@ class Game:
             self.fix = (width / constant.WIDTH)
             self.offset.x = 0
             self.offset.y = (height - (constant.HEIGHT * self.fix)) / 2
+
+    def getProfile(self):
+        if os.path.exists(f"{platformdetect.getSavePath()}media/profiles.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}media/profiles.dat")
+
+            self.profile = platformdetect.getjsondataifexists("User", jsonfile, "current_profile")
+            self.profiles = platformdetect.getjsondataifexists(self.profiles, jsonfile, "profiles")
+        else:
+            self.profile = "User"
+            self.profiles = ["User"]
+    def writeProfile(self):
+        data = {}
+        data["current_profile"] = self.profile
+        data["profiles"] = self.profiles
+        platformdetect.writeFile(f"{platformdetect.getSavePath()}media/profiles.dat", data)
+    
+    def changeProfile(self):
+        index = self.profiles.index(self.profile) + 1
+        if index == len(self.profiles):
+            index = 0
+        self.profile = self.profiles[index]
+        self.writeProfile()
+        self.mainMenu.profile = self.profile
+        self.settingsMenu.profile = self.profile
+        self.settingsMenu.readData()
+        self.mainMenu.Profilebtn.text.text = self.profile
+
+        self.updateListConfig()
+        self.updateConfig()
+        self.updateTypeAnswer()
+
+        print(f"Change to {self.profile}")
+        
+
+
+
+
 
 class GameLogic:
     def __init__(self, _running=True) -> None:
@@ -638,8 +699,10 @@ class GameLogic:
         self.quitbtn.draw(self.screen)
 
 class Menu:
-    def __init__(self, _running = True) -> None:
+    def __init__(self, _running = True, _profile = "") -> None:
         
+        self.profile = _profile
+
         self.running = _running
         
         self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
@@ -657,6 +720,13 @@ class Menu:
                                     media.resize(media.ERROR,40,40),media.resize(media.ERROR,40,40))
         self.quitTime = objects.Timer(.3)
 
+
+        self.Profilebtn = objects.Button((450,25),
+                                         media.resize(media.BTN, 155,70), self.profile,
+                                         media.resize(media.BTN_HOVER, 155,70), media.resize(media.BTN_PRESSED, 155,70),
+                                         pygame.Vector2(20,20))
+        self.daystreakIcon = objects.Node(pygame.Vector2(620, 25), media.DAYSTREAK)
+        self.daystreakText = objects.Text("0", pygame.Vector2(690, 45), constant.WHITE, media.NORMAL_FONT)
 
 
         self.settingsbtn = objects.Button(pygame.Vector2(1170,50),
@@ -684,6 +754,9 @@ class Menu:
         self.playbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.quitbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.settingsbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.Profilebtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+
+
 
 
     def draw(self):
@@ -692,11 +765,14 @@ class Menu:
         self.playbtn.draw(self.screen)
         self.quitbtn.draw(self.screen)
         self.settingsbtn.draw(self.screen)
+        self.Profilebtn.draw(self.screen)
+        self.daystreakIcon.draw(self.screen)
+        self.daystreakText.draw(self.screen)
 
 
 class ConfigurationMenu:
-    def __init__(self, _running = True) -> None:
-        
+    def __init__(self, _running = True, _profile="") -> None:
+        self.profile = _profile
         self.running = _running
         
         self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
@@ -786,8 +862,8 @@ class ConfigurationMenu:
         self.hardbtntime = objects.Timer(.3)
 
     def readData(self):
-        if os.path.exists(f"{platformdetect.getSavePath()}conf.dat"):
-            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}conf.dat")
+        if os.path.exists(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat"):
+            jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat")
             self.status1 = platformdetect.getjsondataifexists(self.status1, jsonfile, "status1")
             self.status2 = platformdetect.getjsondataifexists(self.status2, jsonfile, "status2")
             self.status3 = platformdetect.getjsondataifexists(self.status3, jsonfile, "status3")
@@ -824,7 +900,7 @@ class ConfigurationMenu:
         data["statushard"] = self.statushard
         data["statusbase"] = self.statusbase
         data["statusmode"] = self.statusmode
-        platformdetect.writeFile(f"{platformdetect.getSavePath()}conf.dat", data)
+        platformdetect.writeFile(f"{platformdetect.getSavePath()}media/{self.profile}-data.dat", data)
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
 
         self.fix = _fix

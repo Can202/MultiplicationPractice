@@ -25,9 +25,10 @@ class Button(Node):
                  _image=media.BTN,
                  _text = "no text given",
                  _imagehover=media.BTN_HOVER,
-                 _imagepressed=media.BTN_PRESSED) -> None:
+                 _imagepressed=media.BTN_PRESSED, _distance = pygame.Vector2(25,56)) -> None:
         super().__init__(_position, _image)
-        self.text = Text(_text, _position + pygame.Vector2(25,56))
+        self.distance = _distance
+        self.text = Text(_text, _position + self.distance)
         self.get_pressed = False
         self.normal_image = self.image
         self.image_hover = _imagehover
