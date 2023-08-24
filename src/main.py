@@ -23,6 +23,7 @@ class Game:
         self.gotchangedonandroid = False
 
         self.current_date = datetime.date.today()
+        self.current_date_since_started = datetime.date.today()
         self.yesterday_date = self.current_date - datetime.timedelta(days=1)
         self.lastdate = datetime.date.today() - datetime.timedelta(days=10)
         self.gotDaystreakToday = False
@@ -65,6 +66,12 @@ class Game:
 
     def mainloop(self):
         while self.running:
+            self.current_date = datetime.date.today()
+            if self.current_date > self.current_date_since_started:
+                print("Changed Day")
+                self.yesterday_date = self.current_date - datetime.timedelta(days=1)
+                self.updateDayStreak()
+
             if self.gotchangedonandroid == False and platformdetect.platform() == "android":
                 if self.window.get_height() < self.window.get_width():
                     self.gotchangedonandroid = True
