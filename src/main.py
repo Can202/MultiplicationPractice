@@ -19,7 +19,7 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.running = True
-
+        self.fullscreen = False
 
         self.current_date = datetime.date.today()
         self.yesterday_date = self.current_date - datetime.timedelta(days=1)
@@ -79,6 +79,13 @@ class Game:
                     self.mouseposX = (self.realmouseposX - self.offset.x) / self.fix
                     self.mouseposY = (self.realmouseposY - self.offset.y) / self.fix
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_f:
+                        if event.key == pygame.K_f:  # Press 'f' to toggle fullscreen
+                            self.fullscreen = not self.fullscreen  # Toggle fullscreen flag
+                            if self.fullscreen:
+                                self.screen = pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.FULLSCREEN)
+                            else:
+                                screen = pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.RESIZABLE)
                     if self.typeanswer == "write":
                         if len(self.mainGame.typenumber) < 11:
                             if event.key == pygame.K_0 or event.key == pygame.K_KP_0:
