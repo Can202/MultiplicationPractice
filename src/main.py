@@ -66,8 +66,9 @@ class Game:
     def mainloop(self):
         while self.running:
             if self.gotchangedonandroid == False and platformdetect.platform() == "android":
-                self.gotchangedonandroid = True
-                pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.FULLSCREEN)
+                if self.window.get_height() < self.window.get_width():
+                    self.gotchangedonandroid = True
+                    pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.FULLSCREEN)
             self.mousepressed = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
