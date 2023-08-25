@@ -13,14 +13,19 @@ pygame.init()
 class Game:
     def __init__(self) -> None:
 
-        self.window = pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.RESIZABLE)
-        
+        if platformdetect.platform() == "android":
+            self.window = pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.FULLSCREEN)
+        else:
+            self.window = pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.RESIZABLE)
+
         pygame.display.set_caption("Multiplication Practice")
 
         self.clock = pygame.time.Clock()
         self.running = True
         self.fullscreen = False
-        self.gotchangedonandroid = False
+        self.gotchangedonandroidH = False
+        self.gotchangedonandroidW = False
+        self.changenexttofullscreen = False
 
         self.current_date = datetime.date.today()
         self.current_date_since_started = datetime.date.today()
@@ -59,23 +64,35 @@ class Game:
         self.mainGame.numberlist = None
         self.mainGame.numberlist = self.settingsMenu.returnlistfromnumbers()
         self.musicallowed, self.hardmode, self.mainGame.maxnumber, self.typeanswer = self.settingsMenu.returnvalues()
-
+        
+        self.savecounter = 5
+        self.savecounterTime = objects.Timer(10)
 
 
 
 
     def mainloop(self):
         while self.running:
+
+
             self.current_date = datetime.date.today()
             if self.current_date > self.current_date_since_started:
                 print("Day Changed")
                 self.yesterday_date = self.current_date - datetime.timedelta(days=1)
                 self.updateDayStreak()
 
-            if self.gotchangedonandroid == False and platformdetect.platform() == "android":
+            if self.gotchangedonandroidH == False and platformdetect.platform() == "android":
                 if self.window.get_height() < self.window.get_width():
-                    self.gotchangedonandroid = True
+                    self.gotchangedonandroidH = True
+                    self.changenexttofullscreen = True
+                    pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.RESIZABLE)
+
+                    
+            if self.changenexttofullscreen:
+                if self.window.get_height() < self.window.get_width():
+                    self.changenexttofullscreen = False
                     pygame.display.set_mode((constant.DEFINEWIDTH, constant.DEFINEHEIGHT), pygame.FULLSCREEN)
+
             self.mousepressed = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -169,6 +186,12 @@ class Game:
                                     self.deltaTime,
                                     self.mouseposX, self.mouseposY,
                                     self.mousepressed)
+                
+
+            self.savecounterTime.update(self.deltaTime)     
+            if self.savecounterTime.timing == False:
+                self.savecounter = 5
+                self.mainMenu.saveremovetext.text = f""        
             
             if self.mainMenu.Profilebtn.get_pressed:
                 self.mainMenu.Profilebtn.get_pressed = False
@@ -209,6 +232,22 @@ class Game:
 
                     self.mainMenu.running = True
                     self.settingsMenu.running = False
+            
+            if self.mainMenu.addprbtn.get_pressed:
+                self.mainMenu.addprbtn.get_pressed = False
+                self.writenewProfile()
+            if self.mainMenu.removeprbtn.get_pressed:
+                self.savecounterTime.timing = True
+                self.savecounterTime.time = 0
+                self.savecounter -= 1
+                self.mainMenu.removeprbtn.get_pressed = False
+                self.mainMenu.saveremovetext.text = f"{self.savecounter} left"
+                if self.savecounter <= 0:
+                    self.removecurrentProfile()
+                    self.savecounter = 5
+                    self.mainMenu.saveremovetext.text = f""
+
+
             self.updateTypeAnswer()
             self.screenfix()
             self.deltaTime = self.clock.tick(60) / 1000.0
@@ -330,6 +369,47 @@ class Game:
         else:
             self.profile = "User"
             self.profiles = ["User"]
+    def writenewProfile(self):
+        i = 0
+        cont = True
+        while cont:
+            if i == 0:
+                if not "User" in self.profiles:
+                    self.profiles.append("User")
+                    self.profile = "User"
+                    cont = False
+            else:
+                if not f"User{i}" in self.profiles:
+                    self.profiles.append(f"User{i}")
+                    self.profile = f"User{i}"
+                    cont = False
+            i+=1
+        self.updateProfileData()
+    def removecurrentProfile(self):
+        profiletodelete = self.profile
+        self.changeProfile()
+
+        if profiletodelete in self.profiles:
+            self.profiles.remove(profiletodelete)
+            print(self.profiles)
+        if os.path.exists(f"{platformdetect.getSavePath()}data/{profiletodelete}-data.dat"):
+            os.remove(f"{platformdetect.getSavePath()}data/{profiletodelete}-data.dat")
+        self.updateProfileData()
+
+    def updateProfileData(self):
+        self.writeProfile()
+
+        self.mainMenu.profile = self.profile
+        self.settingsMenu.profile = self.profile
+        self.settingsMenu.readData()
+        self.mainMenu.Profilebtn.text.text = self.profile
+
+        self.updateListConfig()
+        self.updateConfig()
+        self.updateTypeAnswer()
+        self.updateDayStreak()
+
+        print(f"Change to {self.profile}")
     def writeProfile(self):
         data = {}
         data["current_profile"] = self.profile
@@ -399,9 +479,9 @@ class GameLogic:
         self.otherbtn2 = objects.Multiplication(10)
         self.otherbtn3 = objects.Multiplication(10)
 
-        self.quitbtn = objects.Button(pygame.Vector2(55,70),
-                                    media.resize(media.ERROR,40,40), "",
-                                    media.resize(media.ERROR,40,40),media.resize(media.ERROR,40,40))
+        self.quitbtn = objects.Button(pygame.Vector2(45,60),
+                                    media.resize(media.ERROR,60,60), "",
+                                    media.resize(media.ERROR,60,60),media.resize(media.ERROR,60,60))
         
 
         self.goods = 0
@@ -773,9 +853,9 @@ class Menu:
             pygame.Vector2((constant.WIDTH-310)/2, (constant.HEIGHT+300)/2),
             _text="  touch to play")
         
-        self.quitbtn = objects.Button(pygame.Vector2(55,70),
-                                    media.resize(media.ERROR,40,40), "",
-                                    media.resize(media.ERROR,40,40),media.resize(media.ERROR,40,40))
+        self.quitbtn = objects.Button(pygame.Vector2(45,60),
+                                    media.resize(media.ERROR,60,60), "",
+                                    media.resize(media.ERROR,60,60),media.resize(media.ERROR,60,60))
         self.quitTime = objects.Timer(.3)
 
 
@@ -786,6 +866,17 @@ class Menu:
         self.daystreakIcon = objects.Node(pygame.Vector2(620, 28), media.DAYSTREAK)
         self.daystreakText = objects.Text("0", pygame.Vector2(690, 45), constant.WHITE, media.NORMAL_FONT)
 
+        K = 200
+        self.addprbtn = objects.Button((K, 28),
+                                         media.ADD, "",
+                                         media.ADD, media.ADD)
+        self.removeprbtn = objects.Button((K + 80, 28),
+                                         media.REMOVE, "",
+                                         media.REMOVE, media.REMOVE)
+        self.renameprbtn = objects.Button((K + 160, 28),
+                                         media.RENAME, "",
+                                         media.RENAME, media.RENAME)
+        self.saveremovetext = objects.Text("", (K + 100, 100), constant.WHITE, media.NORMAL_FONT)
 
         self.settingsbtn = objects.Button(pygame.Vector2(1170,50),
                                     media.resize(media.IMG_SETTINGS,60,60), "",
@@ -813,6 +904,9 @@ class Menu:
         self.quitbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.settingsbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
         self.Profilebtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.addprbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.removeprbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+        self.renameprbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
 
 
 
@@ -826,6 +920,10 @@ class Menu:
         self.Profilebtn.draw(self.screen)
         self.daystreakIcon.draw(self.screen)
         self.daystreakText.draw(self.screen)
+        self.addprbtn.draw(self.screen)
+        self.removeprbtn.draw(self.screen)
+        self.renameprbtn.draw(self.screen)
+        self.saveremovetext.draw(self.screen)
 
 
 class ConfigurationMenu:
@@ -839,9 +937,9 @@ class ConfigurationMenu:
 
         self.background = objects.Node(pygame.Vector2(0,0), media.BACKGROUND)
 
-        self.quitbtn = objects.Button(pygame.Vector2(55,70),
-                                    media.resize(media.ERROR,40,40), "",
-                                    media.resize(media.ERROR,40,40),media.resize(media.ERROR,40,40))
+        self.quitbtn = objects.Button(pygame.Vector2(45,60),
+                                    media.resize(media.ERROR,60,60), "",
+                                    media.resize(media.ERROR,60,60),media.resize(media.ERROR,60,60))
         self.quitTime = objects.Timer(.3)
 
 

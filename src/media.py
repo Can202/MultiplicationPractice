@@ -21,6 +21,9 @@ BLANK = pygame.image.load(f"{path}media/blank.png")
 MENU = pygame.image.load(f"{path}media/menu.png")
 DAYSTREAK = pygame.image.load(f"{path}media/daystreak.png")
 NODAYSTREAK = pygame.image.load(f"{path}media/nodaystreak.png")
+ADD = pygame.image.load(f"{path}media/add.png")
+REMOVE = pygame.image.load(f"{path}media/remove.png")
+RENAME = pygame.image.load(f"{path}media/rename.png")
 
 
 BTN0 = resize(pygame.image.load(f"{path}media/btn0.png"), 80, 80)
