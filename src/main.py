@@ -7,6 +7,7 @@ import os
 import sound
 import platformdetect
 import datetime
+import shutil
 
 pygame.init()
 
@@ -55,6 +56,7 @@ class Game:
         self.mainGame = GameLogic(False)
         self.mainMenu = Menu(True, self.profile)
         self.settingsMenu = ConfigurationMenu(False, self.profile)
+        self.renameMenu = RenameMenu(False, self.profile)
 
         self.sound_channel = pygame.mixer.Channel(2)
         self.musicallowed = True
@@ -187,6 +189,11 @@ class Game:
                                     self.deltaTime,
                                     self.mouseposX, self.mouseposY,
                                     self.mousepressed)
+            if self.renameMenu.running:
+                self.renameMenu.mainloop(self.fix, self.offset,
+                                    self.deltaTime,
+                                    self.mouseposX, self.mouseposY,
+                                    self.mousepressed)
                 
 
             self.savecounterTime.update(self.deltaTime)     
@@ -247,6 +254,27 @@ class Game:
                     self.removecurrentProfile()
                     self.savecounter = 5
                     self.mainMenu.saveremovetext.text = f""
+            if self.mainMenu.renameprbtn.get_pressed:
+                self.mainMenu.renameprbtn.get_pressed = False
+                self.mainMenu.running = False
+                self.renameMenu.running = True
+                self.renameMenu.profile = self.profile
+                self.renameMenu.currentWritingName.text = ""
+            if self.renameMenu.quitbtn.get_pressed:
+                self.renameMenu.quitbtn.get_pressed = False
+                self.mainMenu.running = True
+                self.renameMenu.running = False
+            if self.renameMenu.btnSEND.get_pressed:
+                self.renameMenu.btnSEND.get_pressed = False
+                if not self.checkifProfileexists(self.renameMenu.currentWritingName.text) and self.renameMenu.currentWritingName.text != "":
+                    lastprofile = self.profile
+                    index = self.profiles.index(lastprofile)
+                    self.profile = self.renameMenu.currentWritingName.text
+                    self.profiles[index] = self.profile
+                    # Change .dat
+                    self.changedatnamefrom(lastprofile, self.profile)
+                    self.updateProfileData()
+                    self.renameMenu.quitbtn.get_pressed = True
 
 
             self.updateTypeAnswer()
@@ -266,6 +294,10 @@ class Game:
             if self.settingsMenu.running:
                 self.window.blit(pygame.transform.scale(
                     self.settingsMenu.screen, (int(constant.WIDTH*self.fix), int(constant.HEIGHT*self.fix))), 
+                    self.offset)
+            if self.renameMenu.running:
+                self.window.blit(pygame.transform.scale(
+                    self.renameMenu.screen, (int(constant.WIDTH*self.fix), int(constant.HEIGHT*self.fix))), 
                     self.offset)
 
             pygame.display.update()
@@ -361,6 +393,12 @@ class Game:
             self.offset.x = 0
             self.offset.y = (height - (constant.HEIGHT * self.fix)) / 2
 
+    def checkifProfileexists(self, profile):
+        if profile in self.profiles:
+            return True
+        else:
+            return False
+
     def getProfile(self):
         if os.path.exists(f"{platformdetect.getSavePath()}data/profiles.dat"):
             jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}data/profiles.dat")
@@ -396,6 +434,15 @@ class Game:
         if os.path.exists(f"{platformdetect.getSavePath()}data/{profiletodelete}-data.dat"):
             os.remove(f"{platformdetect.getSavePath()}data/{profiletodelete}-data.dat")
         self.updateProfileData()
+
+    def changedatnamefrom(self, start, end):
+        if os.path.exists(f"{platformdetect.getSavePath()}data/{end}-data.dat"):
+            os.remove(f"{platformdetect.getSavePath()}data/{end}-data.dat")
+
+        if os.path.exists(f"{platformdetect.getSavePath()}data/{start}-data.dat"):
+            shutil.copy(f"{platformdetect.getSavePath()}data/{start}-data.dat", f"{platformdetect.getSavePath()}data/{end}-data.dat")
+            os.remove(f"{platformdetect.getSavePath()}data/{start}-data.dat")
+
 
     def updateProfileData(self):
         self.writeProfile()
@@ -1273,6 +1320,509 @@ class ConfigurationMenu:
             self.musicbtnstatus.draw(self.screen)
         if not self.statushard:
             self.hardbtnstatus.draw(self.screen)
+
+class RenameMenu:
+    def __init__(self, _running = True, _profile="") -> None:
+        self.profile = _profile
+        self.running = _running
+        self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
+
+        self.background = objects.Node(pygame.Vector2(0,0), media.BACKGROUND)
+
+        self.quitbtn = objects.Button(pygame.Vector2(45,60),
+                                    media.resize(media.ERROR,60,60), "",
+                                    media.resize(media.ERROR,60,60),media.resize(media.ERROR,60,60))
+        self.quitTime = objects.Timer(.3)
+
+        self.previousName = objects.Text("", (500,20), constant.WHITE, media.NORMAL_FONT)
+        self.currentWritingNameBLANK = objects.Node((540, 55), media.resize(media.BLANK, 200, 50))
+        self.currentWritingName = objects.Text("", (550,60), constant.BLACK, media.NORMAL_FONT)
+
+        self.mayus = False
+
+        KW = 150
+        KH = 300
+        AKW = 90
+        AKH = 90
+        ASZ = 70
+        DSZ = pygame.Vector2(25,20)
+
+        self.btn1 = objects.Button((KW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "1",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn2 = objects.Button((KW + AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "2",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn3 = objects.Button((KW + 2*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "3",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn4 = objects.Button((KW + 3*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "4",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn5 = objects.Button((KW + 4*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "5",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn6 = objects.Button((KW + 5*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "6",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn7 = objects.Button((KW + 6*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "7",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn8 = objects.Button((KW + 7*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "8",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn9 = objects.Button((KW + 8*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "9",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btn0 = objects.Button((KW + 9*AKW, KH - AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "0",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnQ = objects.Button((KW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "Q",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnW = objects.Button((KW + AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "W",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnE = objects.Button((KW + 2*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "E",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnR = objects.Button((KW + 3*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "R",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnT = objects.Button((KW + 4*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "T",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnY = objects.Button((KW + 5*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "Y",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnU = objects.Button((KW + 6*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "U",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnI = objects.Button((KW + 7*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "I",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnO = objects.Button((KW + 8*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "O",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnP = objects.Button((KW + 9*AKW, KH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "P",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+
+        self.btnA = objects.Button((KW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "A",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnS = objects.Button((KW + AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "S",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnD = objects.Button((KW + 2*AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "D",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnF = objects.Button((KW + 3*AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "F",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnG = objects.Button((KW + 4*AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "G",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnH = objects.Button((KW + 5*AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "H",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnJ = objects.Button((KW + 6*AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "J",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnK = objects.Button((KW + 7*AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "K",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnL = objects.Button((KW + 8*AKW, KH + AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "L",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        
+
+        self.btnMAYUS = objects.Button((KW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ + AKW,ASZ), "Mayus",
+                                   media.resize(media.BLANK,ASZ + AKW,ASZ), media.resize(media.BLANK,ASZ + AKW,ASZ),
+                                   DSZ)
+
+        self.btnZ = objects.Button((KW + 2*AKW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "Z",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnX = objects.Button((KW + 3*AKW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "X",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnC = objects.Button((KW + 4*AKW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "C",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnV = objects.Button((KW + 5*AKW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "V",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnB = objects.Button((KW + 6*AKW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "B",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnN = objects.Button((KW + 7*AKW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "N",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        self.btnM = objects.Button((KW + 8*AKW, KH + 2*AKH), 
+                                   media.resize(media.BLANK,ASZ,ASZ), "M",
+                                   media.resize(media.BLANK,ASZ,ASZ), media.resize(media.BLANK,ASZ,ASZ),
+                                   DSZ)
+        
+        self.btnERASE = objects.Button((KW + 9*AKW, KH + AKH), 
+                                   media.resize(media.ERROR,ASZ,ASZ), "",
+                                   media.resize(media.ERROR,ASZ,ASZ), media.resize(media.ERROR,ASZ,ASZ),
+                                   DSZ)
+        self.btnSEND = objects.Button((KW + 9*AKW, KH + 2*AKH), 
+                                   media.resize(media.TICKET,ASZ,ASZ), "",
+                                   media.resize(media.TICKET,ASZ,ASZ), media.resize(media.TICKET,ASZ,ASZ),
+                                   DSZ)
+
+
+    def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
+
+        self.fix = _fix
+        self.offset = _offset
+        self.deltaTime = _dt
+        self.mouseposX = _mpx
+        self.mouseposY = _mpy
+
+        self.mousepressed = _mp 
+
+        self.update()
+        self.draw()
+    
+    def update(self):
+        self.quitTime.update(self.deltaTime)
+        self.quitbtn.update(self.deltaTime, self.mousepressed, self.mouseposX, self.mouseposY, self.fix, self.offset)
+
+        self.previousName.text = f"Change {self.profile} to..."
+        self.btn1.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn2.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn3.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn4.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn5.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn6.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn7.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn8.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn9.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btn0.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+
+
+        self.btnQ.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnW.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnE.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnR.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnT.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnY.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnU.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnI.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnO.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnP.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+
+        self.btnA.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnS.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnD.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnF.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnG.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnH.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnJ.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnK.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnL.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+
+        self.btnMAYUS.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+
+        self.btnZ.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnX.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnC.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnV.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnB.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnN.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnM.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+
+        self.btnERASE.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+        self.btnSEND.update(self.deltaTime,self.mousepressed,self.mouseposX,self.mouseposY,self.fix,self.offset)
+
+        if self.btnERASE.get_pressed:
+            self.btnERASE.get_pressed = False
+            self.currentWritingName.text = ""
+        if self.btnMAYUS.get_pressed:
+            self.btnMAYUS.get_pressed = False
+            self.mayus = not self.mayus
+        elif len(self.currentWritingName.text) <= 11:
+            if self.btn0.get_pressed:
+                self.btn0.get_pressed = False
+                self.currentWritingName.text += "0"
+            elif self.btn1.get_pressed:
+                self.btn1.get_pressed = False
+                self.currentWritingName.text += "1"
+            elif self.btn2.get_pressed:
+                self.btn2.get_pressed = False
+                self.currentWritingName.text += "2"
+            elif self.btn3.get_pressed:
+                self.btn3.get_pressed = False
+                self.currentWritingName.text += "3"
+            elif self.btn4.get_pressed:
+                self.btn4.get_pressed = False
+                self.currentWritingName.text += "4"
+            elif self.btn5.get_pressed:
+                self.btn5.get_pressed = False
+                self.currentWritingName.text += "5"
+            elif self.btn6.get_pressed:
+                self.btn6.get_pressed = False
+                self.currentWritingName.text += "6"
+            elif self.btn7.get_pressed:
+                self.btn7.get_pressed = False
+                self.currentWritingName.text += "7"
+            elif self.btn8.get_pressed:
+                self.btn8.get_pressed = False
+                self.currentWritingName.text += "8"
+            elif self.btn9.get_pressed:
+                self.btn9.get_pressed = False
+                self.currentWritingName.text += "9"
+            elif self.btnQ.get_pressed:
+                self.btnQ.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "Q"
+                else:
+                    self.currentWritingName.text += "Q".lower()
+            elif self.btnW.get_pressed:
+                self.btnW.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "W"
+                else:
+                    self.currentWritingName.text += "W".lower()
+            elif self.btnE.get_pressed:
+                self.btnE.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "E"
+                else:
+                    self.currentWritingName.text += "E".lower()
+            elif self.btnR.get_pressed:
+                self.btnR.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "R"
+                else:
+                    self.currentWritingName.text += "R".lower()
+            elif self.btnT.get_pressed:
+                self.btnT.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "T"
+                else:
+                    self.currentWritingName.text += "T".lower()
+            elif self.btnY.get_pressed:
+                self.btnY.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "Y"
+                else:
+                    self.currentWritingName.text += "Y".lower()
+            elif self.btnU.get_pressed:
+                self.btnU.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "U"
+                else:
+                    self.currentWritingName.text += "U".lower()
+            elif self.btnI.get_pressed:
+                self.btnI.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "I"
+                else:
+                    self.currentWritingName.text += "I".lower()
+            elif self.btnO.get_pressed:
+                self.btnO.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "O"
+                else:
+                    self.currentWritingName.text += "O".lower()
+            elif self.btnP.get_pressed:
+                self.btnP.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "P"
+                else:
+                    self.currentWritingName.text += "P".lower()
+            elif self.btnA.get_pressed:
+                self.btnA.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "A"
+                else:
+                    self.currentWritingName.text += "A".lower()
+            elif self.btnS.get_pressed:
+                self.btnS.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "S"
+                else:
+                    self.currentWritingName.text += "S".lower()
+            elif self.btnD.get_pressed:
+                self.btnD.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "D"
+                else:
+                    self.currentWritingName.text += "D".lower()
+            elif self.btnF.get_pressed:
+                self.btnF.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "F"
+                else:
+                    self.currentWritingName.text += "F".lower()
+            elif self.btnG.get_pressed:
+                self.btnG.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "G"
+                else:
+                    self.currentWritingName.text += "G".lower()
+            elif self.btnH.get_pressed:
+                self.btnH.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "H"
+                else:
+                    self.currentWritingName.text += "H".lower()
+            elif self.btnJ.get_pressed:
+                self.btnJ.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "J"
+                else:
+                    self.currentWritingName.text += "J".lower()
+            elif self.btnK.get_pressed:
+                self.btnK.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "K"
+                else:
+                    self.currentWritingName.text += "K".lower()
+            elif self.btnL.get_pressed:
+                self.btnL.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "L"
+                else:
+                    self.currentWritingName.text += "L".lower()
+            elif self.btnZ.get_pressed:
+                self.btnZ.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "Z"
+                else:
+                    self.currentWritingName.text += "Z".lower()
+            elif self.btnX.get_pressed:
+                self.btnX.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "X"
+                else:
+                    self.currentWritingName.text += "X".lower()
+            elif self.btnC.get_pressed:
+                self.btnC.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "C"
+                else:
+                    self.currentWritingName.text += "C".lower()
+            elif self.btnV.get_pressed:
+                self.btnV.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "V"
+                else:
+                    self.currentWritingName.text += "V".lower()
+            elif self.btnB.get_pressed:
+                self.btnB.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "B"
+                else:
+                    self.currentWritingName.text += "B".lower()
+            elif self.btnN.get_pressed:
+                self.btnN.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "N"
+                else:
+                    self.currentWritingName.text += "N".lower()
+            elif self.btnM.get_pressed:
+                self.btnM.get_pressed = False
+                if self.mayus:
+                    self.currentWritingName.text += "M"
+                else:
+                    self.currentWritingName.text += "M".lower()
+
+    def draw(self):
+        self.background.draw(self.screen)
+        self.quitbtn.draw(self.screen)
+        self.previousName.draw(self.screen)
+        self.currentWritingNameBLANK.draw(self.screen)
+        self.currentWritingName.draw(self.screen)
+
+        self.btn1.draw(self.screen)
+        self.btn2.draw(self.screen)
+        self.btn3.draw(self.screen)
+        self.btn4.draw(self.screen)
+        self.btn5.draw(self.screen)
+        self.btn6.draw(self.screen)
+        self.btn7.draw(self.screen)
+        self.btn8.draw(self.screen)
+        self.btn9.draw(self.screen)
+        self.btn0.draw(self.screen)
+
+        self.btnQ.draw(self.screen)
+        self.btnW.draw(self.screen)
+        self.btnE.draw(self.screen)
+        self.btnR.draw(self.screen)
+        self.btnT.draw(self.screen)
+        self.btnY.draw(self.screen)
+        self.btnU.draw(self.screen)
+        self.btnI.draw(self.screen)
+        self.btnO.draw(self.screen)
+        self.btnP.draw(self.screen)
+
+        self.btnA.draw(self.screen)
+        self.btnS.draw(self.screen)
+        self.btnD.draw(self.screen)
+        self.btnF.draw(self.screen)
+        self.btnG.draw(self.screen)
+        self.btnH.draw(self.screen)
+        self.btnJ.draw(self.screen)
+        self.btnK.draw(self.screen)
+        self.btnL.draw(self.screen)
+
+        self.btnMAYUS.draw(self.screen)
+
+        self.btnZ.draw(self.screen)
+        self.btnX.draw(self.screen)
+        self.btnC.draw(self.screen)
+        self.btnV.draw(self.screen)
+        self.btnB.draw(self.screen)
+        self.btnN.draw(self.screen)
+        self.btnM.draw(self.screen)
+
+        self.btnERASE.draw(self.screen)
+        self.btnSEND.draw(self.screen)
+
+            
+
+
 
 if __name__ == "__main__":
     game = Game()
