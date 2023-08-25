@@ -163,6 +163,7 @@ class Game:
             else:
                 self.mainMenu.daystreakIcon.image = media.NODAYSTREAK
                 if self.mainGame.goods >= self.daystreak_goal:
+                    self.mainGame.gotdaystreak=True
                     self.daystreak += 1
                     self.gotDaystreakToday = True
                     self.lastdate = datetime.date.today()
@@ -468,7 +469,7 @@ class GameLogic:
         self.btn3 = objects.Button(pygame.Vector2(20,500), _text="As3")
         self.btn4 = objects.Button(pygame.Vector2(950,500), _text="As4")
         
-
+        self.gotdaystreak = False
 
 
         self.shuffle = True
@@ -766,16 +767,20 @@ class GameLogic:
             self.typenumber = ""
 
         if self.ticketanimation:
+            ticket = media.TICKET
+            if self.gotdaystreak:
+                ticket = media.TICKETDAYSTREAK
             if self.timegood.time < .25:
-                self.ticketonScreen.image = media.resize(media.TICKET, abs(int(media.TICKET.get_width() * self.timegood.time/0.25)),abs(int(media.TICKET.get_height() * self.timegood.time/0.25)))
+                self.ticketonScreen.image = media.resize(ticket, abs(int(ticket.get_width() * self.timegood.time/0.25)),abs(int(ticket.get_height() * self.timegood.time/0.25)))
                 self.ticketonScreen.position = pygame.Vector2((constant.WIDTH - self.ticketonScreen.image.get_width())/2, (constant.HEIGHT - self.ticketonScreen.image.get_height())/2)
             if self.timegood.time > .25:
                 temp = .5 - self.timegood.time
-                self.ticketonScreen.image = media.resize(media.TICKET, abs(int(media.TICKET.get_width() * temp/0.25)),abs(int(media.TICKET.get_height() * temp/0.25)))
+                self.ticketonScreen.image = media.resize(ticket, abs(int(ticket.get_width() * temp/0.25)),abs(int(ticket.get_height() * temp/0.25)))
                 self.ticketonScreen.position = pygame.Vector2((constant.WIDTH - self.ticketonScreen.image.get_width())/2, (constant.HEIGHT - self.ticketonScreen.image.get_height())/2)
 
         else:
             self.ticketonScreen.image = media.resize(media.TICKET, 0, 0)
+            self.gotdaystreak = False
         if self.erroranimation:
             if self.timegood.time < .25:
                 self.erroronScreen.image = media.resize(media.ERROR, abs(int(media.ERROR.get_width() * self.timegood.time/0.25)),abs(int(media.ERROR.get_height() * self.timegood.time/0.25)))
