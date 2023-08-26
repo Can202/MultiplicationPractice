@@ -28,6 +28,8 @@ class Game:
         self.gotchangedonandroidW = False
         self.changenexttofullscreen = False
 
+        self.lgoods = 0
+
         self.current_date = datetime.date.today()
         self.current_date_since_started = datetime.date.today()
         self.yesterday_date = self.current_date - datetime.timedelta(days=1)
@@ -37,6 +39,7 @@ class Game:
         self.daystreak_goal = 10
         self.profile = ""
         self.profiles = [None]
+        self.pointsC = 0
         self.getProfile()
         self.writeProfile()
         self.updateDayStreak()
@@ -76,7 +79,7 @@ class Game:
     def mainloop(self):
         while self.running:
 
-
+            self.settingsMenu.pointsC = self.pointsC
             self.current_date = datetime.date.today()
             if self.current_date > self.current_date_since_started:
                 print("Day Changed")
@@ -160,6 +163,15 @@ class Game:
             self.settingsMenu.daystreak = self.daystreak
             self.settingsMenu.lastdate = self.lastdate
             self.mainMenu.daystreakText.text = str(self.daystreak)
+
+            if self.mainGame.goods == 0:
+                self.lgoods = 0
+
+            if self.lgoods < self.mainGame.goods:
+                print("Got 1 pts")
+                self.pointsC += 1
+
+            self.lgoods = self.mainGame.goods
             if self.gotDaystreakToday:
                 self.mainMenu.daystreakIcon.image = media.DAYSTREAK
             else:
@@ -167,6 +179,8 @@ class Game:
                 if self.mainGame.goods >= self.daystreak_goal:
                     self.mainGame.gotdaystreak=True
                     self.daystreak += 1
+                    print ("Got 9 more, should be 10 total")
+                    self.pointsC += 9
                     self.gotDaystreakToday = True
                     self.lastdate = datetime.date.today()
                     self.settingsMenu.lastdate = self.lastdate
@@ -219,6 +233,7 @@ class Game:
                 self.mainMenu.running = True
                 self.mainGame.running = False
                 self.mainMenu.quitTime.timing = True
+                self.settingsMenu.writeData()
             elif self.mainMenu.quitbtn.get_pressed:
                 if self.mainMenu.quitTime.timing == False:
                     self.running = False
@@ -470,12 +485,14 @@ class Game:
             jsonfile = platformdetect.readFile(f"{platformdetect.getSavePath()}data/{self.profile}-data.dat")
 
             self.daystreak = platformdetect.getjsondataifexists(0, jsonfile, "daystreak")
+            self.pointsC = platformdetect.getjsondataifexists(0, jsonfile, "points")
             lastdate = platformdetect.getjsondataifexists("w0", jsonfile, "lastdaystreakday")
             if lastdate != "w0":
                 self.lastdate = datetime.datetime.fromisoformat(lastdate).date()
         else:
             self.daystreak = 0
             self.lastdate = datetime.date.today() - datetime.timedelta(days=10)
+            self.pointsC = 0
 
     def changeProfile(self):
         index = self.profiles.index(self.profile) + 1
@@ -995,6 +1012,7 @@ class ConfigurationMenu:
         self.profile = _profile
         self.running = _running
         self.daystreak = 0
+        self.pointsC = 0
         self.lastdate = datetime.date.today() - datetime.timedelta(days=10)
         
         self.screen = pygame.Surface((constant.WIDTH, constant.HEIGHT))
@@ -1125,6 +1143,7 @@ class ConfigurationMenu:
 
         data["daystreak"] = self.daystreak
         data["lastdaystreakday"] = self.lastdate.isoformat()
+        data["points"] = self.pointsC
         platformdetect.writeFile(f"{platformdetect.getSavePath()}data/{self.profile}-data.dat", data)
     def mainloop(self, _fix, _offset, _dt, _mpx, _mpy, _mp):
 
