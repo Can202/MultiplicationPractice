@@ -783,6 +783,17 @@ class GameLogic:
             elif self.typebtn9.get_pressed:
                 self.typebtn9.get_pressed = False
                 self.typenumber += "9"
+        else:
+            self.typebtn0.get_pressed = False
+            self.typebtn1.get_pressed = False
+            self.typebtn2.get_pressed = False
+            self.typebtn3.get_pressed = False
+            self.typebtn4.get_pressed = False
+            self.typebtn5.get_pressed = False
+            self.typebtn6.get_pressed = False
+            self.typebtn7.get_pressed = False
+            self.typebtn8.get_pressed = False
+            self.typebtn9.get_pressed = False
         if self.typeerase.get_pressed:
             self.typeerase.get_pressed = False
             self.typenumber = ""
@@ -1768,6 +1779,44 @@ class RenameMenu:
                     self.currentWritingName.text += "M"
                 else:
                     self.currentWritingName.text += "M".lower()
+        else:
+            self.btn1.get_pressed = False
+            self.btn2.get_pressed = False
+            self.btn3.get_pressed = False
+            self.btn4.get_pressed = False
+            self.btn5.get_pressed = False
+            self.btn6.get_pressed = False
+            self.btn7.get_pressed = False
+            self.btn8.get_pressed = False
+            self.btn9.get_pressed = False
+            self.btn0.get_pressed = False
+            self.btnQ.get_pressed = False
+            self.btnW.get_pressed = False
+            self.btnE.get_pressed = False
+            self.btnR.get_pressed = False
+            self.btnT.get_pressed = False
+            self.btnY.get_pressed = False
+            self.btnU.get_pressed = False
+            self.btnI.get_pressed = False
+            self.btnO.get_pressed = False
+            self.btnP.get_pressed = False
+            self.btnA.get_pressed = False
+            self.btnS.get_pressed = False
+            self.btnD.get_pressed = False
+            self.btnF.get_pressed = False
+            self.btnG.get_pressed = False
+            self.btnH.get_pressed = False
+            self.btnJ.get_pressed = False
+            self.btnK.get_pressed = False
+            self.btnL.get_pressed = False
+            self.btnZ.get_pressed = False
+            self.btnX.get_pressed = False
+            self.btnC.get_pressed = False
+            self.btnV.get_pressed = False
+            self.btnB.get_pressed = False
+            self.btnN.get_pressed = False
+            self.btnM.get_pressed = False
+
 
     def draw(self):
         self.background.draw(self.screen)
