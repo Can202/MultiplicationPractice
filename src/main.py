@@ -245,15 +245,16 @@ class Game:
                 self.mainMenu.addprbtn.get_pressed = False
                 self.writenewProfile()
             if self.mainMenu.removeprbtn.get_pressed:
-                self.savecounterTime.timing = True
-                self.savecounterTime.time = 0
-                self.savecounter -= 1
                 self.mainMenu.removeprbtn.get_pressed = False
-                self.mainMenu.saveremovetext.text = f"{self.savecounter} left"
-                if self.savecounter <= 0:
-                    self.removecurrentProfile()
-                    self.savecounter = 5
-                    self.mainMenu.saveremovetext.text = f""
+                if len(self.profiles) > 1:
+                    self.savecounterTime.timing = True
+                    self.savecounterTime.time = 0
+                    self.savecounter -= 1
+                    self.mainMenu.saveremovetext.text = f"{self.savecounter} left"
+                    if self.savecounter <= 0:
+                        self.removecurrentProfile()
+                        self.savecounter = 5
+                        self.mainMenu.saveremovetext.text = f""
             if self.mainMenu.renameprbtn.get_pressed:
                 self.mainMenu.renameprbtn.get_pressed = False
                 self.mainMenu.running = False
